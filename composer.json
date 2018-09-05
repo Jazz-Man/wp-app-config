@@ -1,0 +1,24 @@
+{
+    "name": "jazzman/wp-app-config",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vasyl Sokolyk",
+            "email": "vsokolyk@gmail.com"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "JazzMan\\APP_Config\\":""
+        },
+        "files": [
+            "helper.php"
+        ]
+    },
+    "require-dev": {
+        "jazzman/parameter-bag": "^0.1.1",
+        "jazzman/singleton-trait": "^1.0"
+    }
+}
