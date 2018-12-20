@@ -1,7 +1,6 @@
 <?php
 
-if ( ! function_exists('app_config')) {
-
+if (!function_exists('app_config')) {
     /**
      * @return \JazzMan\ParameterBag\ParameterBag
      */

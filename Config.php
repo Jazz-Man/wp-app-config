@@ -6,13 +6,10 @@ use JazzMan\ParameterBag\ParameterBag;
 use JazzMan\Traits\SingletonTrait;
 
 /**
- * Class Config
- *
- * @package JazzMan\APP_Config
+ * Class Config.
  */
 class Config
 {
-
     use SingletonTrait;
 
     /**
@@ -22,7 +19,6 @@ class Config
 
     public function __construct()
     {
-
         $config = apply_filters('wp_app_config', []);
 
         $this->config = new ParameterBag($config);
