@@ -1,0 +1,2 @@
+# wp-app-config
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/35a3222365a543be88bfa0796bf6dbee)](https://app.codacy.com/app/vsokolyk/wp-app-config?utm_source=github.com&utm_medium=referral&utm_content=Jazz-Man/wp-app-config&utm_campaign=Badge_Grade_Settings)
