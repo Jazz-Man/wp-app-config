@@ -19,7 +19,10 @@ class Config
 
     public function __construct()
     {
-        $config = apply_filters('wp_app_config', []);
+        $config = apply_filters('wp_app_config', [
+            'root_dir' => get_stylesheet_directory(),
+            'root_url' => get_stylesheet_directory_uri(),
+        ]);
 
         $this->config = new ParameterBag($config);
     }
