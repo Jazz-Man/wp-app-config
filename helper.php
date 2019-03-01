@@ -10,31 +10,30 @@ if (!function_exists('app_config')) {
     }
 }
 
-if (!function_exists('app_dir_patch')) {
+if (!function_exists('app_dir_path')) {
     /**
-     * @param string $patch
+     * @param string $path
      *
      * @return string
      */
-    function app_dir_patch($patch = '')
+    function app_dir_path($path = '')
     {
-        $patch = trim($patch, DIRECTORY_SEPARATOR);
+        $path = trim($path, DIRECTORY_SEPARATOR);
 
-        return app_config()->get('root_dir').DIRECTORY_SEPARATOR.$patch;
+        return app_config()->get('root_dir').DIRECTORY_SEPARATOR.$path;
     }
 }
 
 if (!function_exists('app_url_patch')) {
     /**
-     * @param string $patch
+     * @param string $path
      *
      * @return string
      */
-    function app_url_patch($patch = '')
+    function app_url_path($path = '')
     {
-        $patch = trim($patch, DIRECTORY_SEPARATOR);
+        $path = trim($path, '/');
 
-        return app_config()->get('root_url').DIRECTORY_SEPARATOR.$patch;
+        return app_config()->get('root_url').'/'.$path;
     }
 }
-
