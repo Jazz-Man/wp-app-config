@@ -77,6 +77,50 @@ if (!\function_exists('app_get_request_data')) {
     }
 }
 
+if (!\function_exists('app_json_decode')) {
+    /**
+     * @param  mixed  $json
+     * @param  bool  $assoc
+     * @param  int  $depth
+     * @param  int  $options
+     *
+     * @throws InvalidArgumentException
+     * @return mixed
+     */
+    function app_json_decode($json, bool $assoc = false, int $depth = 512, int $options = 0)
+    {
+        $data = \json_decode($json, $assoc, $depth, $options);
+        if (JSON_ERROR_NONE !== \json_last_error()) {
+            throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
+        }
+
+        return $data;
+    }
+}
+
+if (!\function_exists('app_files_in_path')) {
+    /**
+     * @param  string  $folder
+     * @param  string  $pattern
+     * @param  int  $max_depth
+     *
+     * @throws InvalidArgumentException
+     * @return RegexIterator
+     */
+    function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
+    {
+        if (!is_readable($folder)){
+            throw new InvalidArgumentException('folder is not exist');
+        }
+
+        $dir = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+        $ite = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
+        $ite->setMaxDepth($max_depth);
+
+        return new RegexIterator($ite, $pattern);
+    }
+}
+
 if (!\function_exists('app_get_taxonomy_ancestors')) {
     /**
      * @param  int  $term_id
@@ -128,3 +172,4 @@ if (!\function_exists('app_get_taxonomy_ancestors')) {
         return $sql->fetchAll($mode, ...$args);
     }
 }
+
