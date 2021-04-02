@@ -1,22 +1,17 @@
 <?php
 
+use JazzMan\AppConfig\Config;
+use JazzMan\ParameterBag\ParameterBag;
+
 if (!function_exists('app_config')) {
-    /**
-     * @return \JazzMan\ParameterBag\ParameterBag
-     */
-    function app_config()
+    function app_config(): ParameterBag
     {
-        return JazzMan\APP_Config\Config::getInstance()->getConfig();
+        return Config::getInstance()->getConfig();
     }
 }
 
 if (!function_exists('app_dir_path')) {
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    function app_dir_path($path = '')
+    function app_dir_path(string $path = ''): string
     {
         $path = trim($path, DIRECTORY_SEPARATOR);
 
@@ -25,12 +20,7 @@ if (!function_exists('app_dir_path')) {
 }
 
 if (!function_exists('app_url_patch')) {
-    /**
-     * @param string $path
-     *
-     * @return string
-     */
-    function app_url_path($path = '')
+    function app_url_path(string $path = ''): string
     {
         $path = trim($path, '/');
 

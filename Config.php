@@ -1,6 +1,6 @@
 <?php
 
-namespace JazzMan\APP_Config;
+namespace JazzMan\AppConfig;
 
 use JazzMan\ParameterBag\ParameterBag;
 use JazzMan\Traits\SingletonTrait;
@@ -27,10 +27,7 @@ class Config
         $this->config = new ParameterBag($config);
     }
 
-    /**
-     * @return ParameterBag
-     */
-    public function getConfig()
+    public function getConfig(): ParameterBag
     {
         return $this->config;
     }
