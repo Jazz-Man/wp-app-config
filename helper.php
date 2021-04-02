@@ -236,3 +236,65 @@ if (!\function_exists('app_get_current_url')) {
         return set_url_scheme('https://'.$_SERVER['HTTP_HOST'].app_get_current_relative_url());
     }
 }
+
+if (!\function_exists('app_read_csv_file')) {
+    /**
+     * @param  string  $path
+     *
+     * @return \Generator
+     */
+    function app_read_csv_file(string $path): Generator
+    {
+        if (\is_file($path)) {
+            $handle = \fopen($path, 'rb');
+            while (!\feof($handle)) {
+                yield \fgetcsv($handle);
+            }
+            \fclose($handle);
+        }
+    }
+}
+
+if (!\function_exists('app_get_csv_data')) {
+    /**
+     * @param  string  $csv_file
+     *
+     * @return Iterator
+     */
+    function app_get_csv_data(string $csv_file): Iterator
+    {
+        $iterator = app_read_csv_file($csv_file);
+
+        $first_line = $iterator->current();
+        $first_line_count = \count($first_line);
+
+        return iter\map(
+            static function ($value) use ($first_line, $first_line_count) {
+                if (!\is_array($value)) {
+                    return false;
+                }
+                $value_count = \count($value);
+                if ($value !== $first_line && $first_line_count === $value_count) {
+                    return \array_combine($first_line, $value);
+                }
+
+                return false;
+            },
+            $iterator
+        );
+    }
+}
+
+if (!\function_exists('app_error_log')) {
+    function app_error_log(Exception $exception, string $error_code): WP_Error
+    {
+        $error = new WP_Error();
+        if (\defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            \error_log($exception);
+        }
+
+        $error->add($error_code, $exception->getMessage());
+
+        return $error;
+    }
+}
