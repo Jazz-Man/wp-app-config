@@ -282,10 +282,6 @@ if (!\function_exists('app_error_log')) {
 
 if (!\function_exists('app_generate_random_string')) {
     /**
-     * @param  string  $input
-     * @param  int  $strength
-     *
-     * @return string
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string
@@ -298,5 +294,30 @@ if (!\function_exists('app_generate_random_string')) {
         }
 
         return \strtoupper($random_string);
+    }
+}
+
+if (!\function_exists('app_add_attr_to_el')) {
+    function app_add_attr_to_el(array $attr): string
+    {
+        $attributes = [];
+        foreach ($attr as $key => $value) {
+            if (\is_array($value)) {
+                $value = \implode(' ', \array_filter($value));
+            }
+            if ('class' === $key && '' === $value) {
+                continue;
+            }
+
+            if (!\is_bool($value)) {
+                $attributes[] = \sprintf('%s="%s"', esc_attr($key), esc_attr($value));
+            }
+
+            if (true === $value) {
+                $attributes[] = esc_attr($key);
+            }
+        }
+
+        return ' '.\implode(' ', $attributes);
     }
 }
