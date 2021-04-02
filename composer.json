@@ -17,12 +17,13 @@
     "require": {
         "php": ">=7.1",
         "jazzman/parameter-bag": "^1.0",
-        "jazzman/singleton-trait": "^1.0",
+        "jazzman/singleton-trait": "^1.1",
+        "nikic/iter": "^2.1",
         "roots/wordpress": "^5"
     },
     "autoload": {
         "psr-4": {
-            "JazzMan\\AppConfig\\":""
+            "JazzMan\\AppConfig\\":"src"
         },
         "files": [
             "helper.php"
