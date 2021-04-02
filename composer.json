@@ -19,6 +19,7 @@
         "jazzman/parameter-bag": "^1.0",
         "jazzman/singleton-trait": "^1.0",
         "jazzman/wp-db-pdo": "^0.1.1",
+        "nikic/iter": "^2.1",
         "roots/wordpress": "^5"
     },
     "autoload": {
