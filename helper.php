@@ -79,10 +79,7 @@ if (!\function_exists('app_get_request_data')) {
 
 if (!\function_exists('app_json_decode')) {
     /**
-     * @param  mixed  $json
-     * @param  bool  $assoc
-     * @param  int  $depth
-     * @param  int  $options
+     * @param mixed $json
      *
      * @return mixed
      */
@@ -99,9 +96,6 @@ if (!\function_exists('app_json_decode')) {
 
 if (!\function_exists('app_files_in_path')) {
     /**
-     * @param  string  $folder
-     * @param  string  $pattern
-     * @param  int  $max_depth
      * @return \RegexIterator
      */
     function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
@@ -120,11 +114,8 @@ if (!\function_exists('app_files_in_path')) {
 
 if (!\function_exists('app_get_taxonomy_ancestors')) {
     /**
-     * @param  int  $term_id
-     * @param  string  $taxonomy
-     * @param  int  $mode
-     * @param  mixed  ...$args
-     * @return array
+     * @param int   $mode
+     * @param mixed ...$args
      */
     function app_get_taxonomy_ancestors(int $term_id, string $taxonomy, $mode = PDO::FETCH_COLUMN, ...$args): array
     {
@@ -171,8 +162,6 @@ if (!\function_exists('app_get_taxonomy_ancestors')) {
 
 if (!\function_exists('app_get_template')) {
     /**
-     * @param  string  $template
-     * @param  array  $attributes
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
@@ -197,7 +186,6 @@ if (!\function_exists('app_get_template')) {
 
 if (!\function_exists('app_base64_encode_data')) {
     /**
-     * @param  string  $str
      * @return bool|string
      */
     function app_base64_encode_data(string $str)
@@ -239,8 +227,6 @@ if (!\function_exists('app_get_current_url')) {
 
 if (!\function_exists('app_read_csv_file')) {
     /**
-     * @param  string  $path
-     *
      * @return \Generator
      */
     function app_read_csv_file(string $path): Generator
@@ -256,11 +242,6 @@ if (!\function_exists('app_read_csv_file')) {
 }
 
 if (!\function_exists('app_get_csv_data')) {
-    /**
-     * @param  string  $csv_file
-     *
-     * @return Iterator
-     */
     function app_get_csv_data(string $csv_file): Iterator
     {
         $iterator = app_read_csv_file($csv_file);
@@ -296,5 +277,26 @@ if (!\function_exists('app_error_log')) {
         $error->add($error_code, $exception->getMessage());
 
         return $error;
+    }
+}
+
+if (!\function_exists('app_generate_random_string')) {
+    /**
+     * @param  string  $input
+     * @param  int  $strength
+     *
+     * @return string
+     * @throws \Exception
+     */
+    function app_generate_random_string(string $input, int $strength = 16): string
+    {
+        $input_length = \strlen($input);
+        $random_string = '';
+        for ($i = 0; $i < $strength; ++$i) {
+            $random_character = $input[\random_int(0, $input_length - 1)];
+            $random_string .= $random_character;
+        }
+
+        return \strtoupper($random_string);
     }
 }
