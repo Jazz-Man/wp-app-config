@@ -60,3 +60,19 @@ if (!\function_exists('app_use_webp')) {
         return false;
     }
 }
+
+if (!\function_exists('app_get_request_data')) {
+    function app_get_request_data(): ParameterBag
+    {
+        if (!empty($_SERVER['REQUEST_METHOD'])) {
+            $request_method = $_SERVER['REQUEST_METHOD'];
+            $_data = 'POST' === $request_method ? $_POST : $_GET;
+        } elseif (!empty($_REQUEST)) {
+            $_data = $_REQUEST;
+        } else {
+            $_data = [];
+        }
+
+        return new ParameterBag($_data);
+    }
+}
