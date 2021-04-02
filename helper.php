@@ -321,3 +321,27 @@ if (!\function_exists('app_add_attr_to_el')) {
         return ' '.\implode(' ', $attributes);
     }
 }
+
+if (!\function_exists('app_get_dom_content')) {
+    /**
+     * @return \DOMDocument
+     */
+    function app_get_dom_content(string $content): DOMDocument
+    {
+        $dom = new DOMDocument('1.0', 'UTF-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->encoding = 'UTF-8';
+        \libxml_use_internal_errors(true);
+
+        $content = \str_replace(PHP_EOL, null, $content);
+        $content = \mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
+
+        $dom->loadHTML(
+            $content,
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_COMPACT | LIBXML_NOBLANKS | LIBXML_PEDANTIC
+        );
+
+        return $dom;
+    }
+}
