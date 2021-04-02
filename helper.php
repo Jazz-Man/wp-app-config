@@ -1,6 +1,7 @@
 <?php
 
 use JazzMan\AppConfig\Config;
+use JazzMan\AppConfig\Manifest;
 use JazzMan\ParameterBag\ParameterBag;
 
 if (!function_exists('app_config')) {
@@ -343,5 +344,18 @@ if (!\function_exists('app_get_dom_content')) {
         );
 
         return $dom;
+    }
+}
+
+if (!\function_exists('app_manifest')) {
+    function app_manifest(string $manifest_file = 'dist/mix-manifest.json', string $dist_dir = 'dist'): Manifest
+    {
+        /** @var Manifest $manifest */
+        static $manifest;
+        if (empty($manifest)) {
+            $manifest = Manifest::getInstance($manifest_file, $dist_dir);
+        }
+
+        return $manifest;
     }
 }
