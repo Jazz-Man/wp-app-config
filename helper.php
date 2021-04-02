@@ -229,3 +229,10 @@ if (!\function_exists('app_get_current_relative_url')) {
         return $_root_relative_current;
     }
 }
+
+if (!\function_exists('app_get_current_url')) {
+    function app_get_current_url(): string
+    {
+        return set_url_scheme('https://'.$_SERVER['HTTP_HOST'].app_get_current_relative_url());
+    }
+}
