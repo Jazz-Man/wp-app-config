@@ -311,3 +311,15 @@ if (!\function_exists('app_manifest')) {
         return $manifest;
     }
 }
+
+if (!function_exists('app_get_human_friendly')) {
+    /**
+     * @param  string  $name
+     *
+     * @return string
+     */
+    function app_get_human_friendly(string $name = ''): string
+    {
+        return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
+    }
+}
