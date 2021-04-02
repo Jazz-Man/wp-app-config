@@ -200,3 +200,18 @@ if (!\function_exists('app_get_template')) {
     }
 }
 
+if (!\function_exists('app_base64_encode_data')) {
+    /**
+     * @param  string  $str
+     *
+     * @return bool|string
+     */
+    function app_base64_encode_data(string $str)
+    {
+        if (\base64_encode(\base64_decode($str, true)) === $str) {
+            $str = \base64_decode($str);
+        }
+
+        return $str;
+    }
+}
