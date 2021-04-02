@@ -84,7 +84,6 @@ if (!\function_exists('app_json_decode')) {
      * @param  int  $depth
      * @param  int  $options
      *
-     * @throws InvalidArgumentException
      * @return mixed
      */
     function app_json_decode($json, bool $assoc = false, int $depth = 512, int $options = 0)
@@ -103,13 +102,11 @@ if (!\function_exists('app_files_in_path')) {
      * @param  string  $folder
      * @param  string  $pattern
      * @param  int  $max_depth
-     *
-     * @throws InvalidArgumentException
-     * @return RegexIterator
+     * @return \RegexIterator
      */
     function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
     {
-        if (!is_readable($folder)){
+        if (!is_readable($folder)) {
             throw new InvalidArgumentException('folder is not exist');
         }
 
@@ -127,7 +124,6 @@ if (!\function_exists('app_get_taxonomy_ancestors')) {
      * @param  string  $taxonomy
      * @param  int  $mode
      * @param  mixed  ...$args
-     *
      * @return array
      */
     function app_get_taxonomy_ancestors(int $term_id, string $taxonomy, $mode = PDO::FETCH_COLUMN, ...$args): array
@@ -177,7 +173,6 @@ if (!\function_exists('app_get_template')) {
     /**
      * @param  string  $template
      * @param  array  $attributes
-     *
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
@@ -203,7 +198,6 @@ if (!\function_exists('app_get_template')) {
 if (!\function_exists('app_base64_encode_data')) {
     /**
      * @param  string  $str
-     *
      * @return bool|string
      */
     function app_base64_encode_data(string $str)
@@ -213,5 +207,25 @@ if (!\function_exists('app_base64_encode_data')) {
         }
 
         return $str;
+    }
+}
+
+if (!\function_exists('app_trim_string')) {
+    function app_trim_string(string $string): string
+    {
+        return \trim(\preg_replace('/\s{2,}/siu', ' ', $string));
+    }
+}
+
+if (!\function_exists('app_get_current_relative_url')) {
+    function app_get_current_relative_url(): string
+    {
+        $_root_relative_current = untrailingslashit($_SERVER['REQUEST_URI']);
+
+        if (is_customize_preview()) {
+            $_root_relative_current = \strtok(untrailingslashit($_SERVER['REQUEST_URI']), '?');
+        }
+
+        return $_root_relative_current;
     }
 }
