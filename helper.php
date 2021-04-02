@@ -113,54 +113,6 @@ if (!\function_exists('app_files_in_path')) {
     }
 }
 
-if (!\function_exists('app_get_taxonomy_ancestors')) {
-    /**
-     * @param int   $mode
-     * @param mixed ...$args
-     */
-    function app_get_taxonomy_ancestors(int $term_id, string $taxonomy, $mode = PDO::FETCH_COLUMN, ...$args): array
-    {
-        global $wpdb;
-
-        $pdo = app_db_pdo();
-
-        $sql = $pdo->prepare(
-            <<<SQL
-                with recursive ancestors as (
-                  select
-                    cat_1.term_id,
-                    cat_1.taxonomy,
-                    cat_1.parent
-                  from {$wpdb->term_taxonomy} as cat_1
-                  where
-                    cat_1.term_id = :term_id
-                  union all
-                  select
-                    a.term_id,
-                    cat_2.taxonomy,
-                    cat_2.parent
-                  from ancestors a
-                  inner join {$wpdb->term_taxonomy} cat_2 on cat_2.term_id = a.parent
-                  where
-                      cat_2.parent > 0
-                  and cat_2.taxonomy = :taxonomy
-                )
-                select
-                  a.parent as term_id,
-                  a.taxonomy as taxonomy,
-                  term.name as term_name,
-                  term.slug as term_slug
-                from ancestors a
-                left join {$wpdb->terms} as term on term.term_id = a.parent
-                SQL
-        );
-
-        $sql->execute(\compact('term_id', 'taxonomy'));
-
-        return $sql->fetchAll($mode, ...$args);
-    }
-}
-
 if (!\function_exists('app_get_template')) {
     /**
      * @return false|string
