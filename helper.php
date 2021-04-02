@@ -173,3 +173,30 @@ if (!\function_exists('app_get_taxonomy_ancestors')) {
     }
 }
 
+if (!\function_exists('app_get_template')) {
+    /**
+     * @param  string  $template
+     * @param  array  $attributes
+     *
+     * @return false|string
+     */
+    function app_get_template(string $template, array $attributes = [])
+    {
+        $result = '';
+
+        $template_file = locate_template($template);
+
+        if (!empty($template_file)) {
+            if (!empty($attributes)) {
+                \extract($attributes, EXTR_OVERWRITE);
+            }
+
+            \ob_start();
+            @include $template_file;
+            $result = \ob_get_clean();
+        }
+
+        return $result;
+    }
+}
+
