@@ -7,18 +7,37 @@
             "email": "vsokolyk@gmail.com"
         }
     ],
+    "config": {
+        "sort-packages": true,
+        "preferred-install": "dist",
+        "optimize-autoloader": true,
+        "classmap-authoritative": true,
+        "apcu-autoloader": true
+    },
     "require": {
-        "php": ">=5.6",
+        "php": ">=7.1",
         "jazzman/parameter-bag": "^1.0",
-        "jazzman/singleton-trait": "^1.0"
+        "jazzman/singleton-trait": "^1.0",
+        "roots/wordpress": "^5"
     },
     "autoload": {
         "psr-4": {
-            "JazzMan\\APP_Config\\":""
+            "JazzMan\\AppConfig\\":""
         },
         "files": [
             "helper.php"
         ]
     },
-    "require-dev": {}
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
+    },
+    "extra": {
+        "installer-paths": {
+            "vendor/wp/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+            "vendor/wp/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "vendor/wp/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+        },
+        "wordpress-install-dir": "vendor/wp"
+    },
+    "description": ""
 }
