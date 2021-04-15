@@ -40,34 +40,33 @@ if (!\function_exists('app_use_webp')) {
             return true;
         }
 
-        $isGoogle = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+        $isGoogle = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/\s+(Chrome\/|Googlebot\/)/i',
             ],
         ]);
 
-        if (!empty($isGoogle)){
+        if (!empty($isGoogle)) {
             return true;
         }
 
-        $isSafari = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+        $isSafari = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/Version.[\d\.]*\s+Safari.[\d\.]*/i',
             ],
         ]);
 
-        $isFirefox = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+        $isFirefox = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/\s+Firefox.[\d\.]*/i',
             ],
         ]);
 
-
-        if ($isSafari && (\preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))){
+        if ($isSafari && (\preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
             return true;
         }
 
-        if ($isFirefox && (\preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='))){
+        if ($isFirefox && (\preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='))) {
             return true;
         }
 
@@ -78,9 +77,14 @@ if (!\function_exists('app_use_webp')) {
 if (!\function_exists('app_get_request_data')) {
     function app_get_request_data(): ParameterBag
     {
-        if (!empty($_SERVER['REQUEST_METHOD'])) {
-            $request_method = $_SERVER['REQUEST_METHOD'];
-            $_data = 'POST' === $request_method ? $_POST : $_GET;
+        $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/get|post/i',
+            ],
+        ]);
+
+        if ($method) {
+            $_data = filter_input_array('POST' === $method ? INPUT_POST : INPUT_GET);
         } elseif (!empty($_REQUEST)) {
             $_data = $_REQUEST;
         } else {
