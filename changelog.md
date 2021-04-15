@@ -1,7 +1,15 @@
 
-2.1.0 / 2021-04-15
+2.1.1 / 2021-04-15
 ==================
 
+  * fix "Direct use of $_SERVER Superglobal detected"
+  * update request data
+  * used filter_input function for app_use_webp
+
+2.1.1 / 2021-04-15
+==================
+
+  * add changelog
   * add app_is_current_host function and update phpdocs
 
 2.1.0 / 2021-04-02
