@@ -100,7 +100,7 @@ if (!\function_exists('app_get_request_data')) {
         ]);
 
         if ($method) {
-            $_data = filter_input_array('POST' === $method ? INPUT_POST : INPUT_GET);
+            $_data = (array)filter_input_array('POST' === $method ? INPUT_POST : INPUT_GET);
         } elseif (!empty($_REQUEST)) {
             $_data = $_REQUEST;
         } else {
