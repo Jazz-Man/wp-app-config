@@ -14,6 +14,11 @@ if (!function_exists('app_config')) {
 }
 
 if (!function_exists('app_dir_path')) {
+    /**
+     * @param  string  $path
+     *
+     * @return string
+     */
     function app_dir_path(string $path): string
     {
         return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
@@ -21,6 +26,11 @@ if (!function_exists('app_dir_path')) {
 }
 
 if (!function_exists('app_url_patch')) {
+    /**
+     * @param  string  $path
+     *
+     * @return string
+     */
     function app_url_path(string $path): string
     {
         return app_config()->get('root_url').'/'.trim($path, '/');
@@ -28,32 +38,49 @@ if (!function_exists('app_url_patch')) {
 }
 
 if (!\function_exists('app_use_webp')) {
+    /**
+     * @return bool
+     */
     function app_use_webp(): bool
     {
-        if (!empty($_SERVER['HTTP_ACCEPT']) && false !== \strpos($_SERVER['HTTP_ACCEPT'], 'image/webp')) {
+        $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/image\\/webp/',
+            ],
+        ]);
+
+        if (!empty($acceptWebp)) {
             return true;
         }
 
-        $UA = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : false;
+        $isGoogle = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/\s+(Chrome\/|Googlebot\/)/i',
+            ],
+        ]);
 
-        if ($UA) {
-            if (false !== \strpos($UA, ' Chrome/')) {
-                return true;
-            }
+        if (!empty($isGoogle)) {
+            return true;
+        }
 
-            if (false !== \strpos($UA, 'Safari') && ($result = \stristr($UA, 'Version'))) {
-                \preg_match('/(?:version\/(?<version>[\d.]+))?/i', $result, $matches);
-                if (!empty($matches['version']) && \version_compare($matches['version'], '13', '>=')) {
-                    return true;
-                }
-            }
+        $isSafari = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/Version.[\d\.]*\s+Safari.[\d\.]*/i',
+            ],
+        ]);
 
-            if (false !== \strpos($UA, 'Firefox')) {
-                $result = \explode('/', \stristr($UA, 'Firefox'));
-                if (!empty($result[1]) && \version_compare($result[1], '65', '>=')) {
-                    return true;
-                }
-            }
+        $isFirefox = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/\s+Firefox.[\d\.]*/i',
+            ],
+        ]);
+
+        if ($isSafari && (\preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
+            return true;
+        }
+
+        if ($isFirefox && (\preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='))) {
+            return true;
         }
 
         return false;
@@ -61,11 +88,19 @@ if (!\function_exists('app_use_webp')) {
 }
 
 if (!\function_exists('app_get_request_data')) {
+    /**
+     * @return \JazzMan\ParameterBag\ParameterBag
+     */
     function app_get_request_data(): ParameterBag
     {
-        if (!empty($_SERVER['REQUEST_METHOD'])) {
-            $request_method = $_SERVER['REQUEST_METHOD'];
-            $_data = 'POST' === $request_method ? $_POST : $_GET;
+        $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/get|post/i',
+            ],
+        ]);
+
+        if ($method) {
+            $_data = filter_input_array('POST' === $method ? INPUT_POST : INPUT_GET);
         } elseif (!empty($_REQUEST)) {
             $_data = $_REQUEST;
         } else {
@@ -159,6 +194,11 @@ if (!\function_exists('app_base64_encode_data')) {
 }
 
 if (!\function_exists('app_trim_string')) {
+    /**
+     * @param  string  $string
+     *
+     * @return string
+     */
     function app_trim_string(string $string): string
     {
         return \trim(\preg_replace('/\s{2,}/siu', ' ', $string));
@@ -166,26 +206,41 @@ if (!\function_exists('app_trim_string')) {
 }
 
 if (!\function_exists('app_get_current_relative_url')) {
+    /**
+     * @return string
+     */
     function app_get_current_relative_url(): string
     {
-        $_root_relative_current = untrailingslashit($_SERVER['REQUEST_URI']);
+        $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+
+        $currentRelative = untrailingslashit($requestUri);
 
         if (is_customize_preview()) {
-            $_root_relative_current = \strtok(untrailingslashit($_SERVER['REQUEST_URI']), '?');
+            $currentRelative = \strtok(untrailingslashit($requestUri), '?');
         }
 
-        return $_root_relative_current;
+        return $currentRelative;
     }
 }
 
 if (!\function_exists('app_get_current_url')) {
+    /**
+     * @return string
+     */
     function app_get_current_url(): string
     {
-        return set_url_scheme('https://'.$_SERVER['HTTP_HOST'].app_get_current_relative_url());
+        $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+
+        return set_url_scheme('https://'.$host.app_get_current_relative_url());
     }
 }
 
 if (!\function_exists('app_is_current_host')) {
+    /**
+     * @param  string  $url
+     *
+     * @return bool
+     */
     function app_is_current_host(string $url): bool
     {
         static $current_host;
@@ -222,6 +277,11 @@ if (!\function_exists('app_read_csv_file')) {
 }
 
 if (!\function_exists('app_get_csv_data')) {
+    /**
+     * @param  string  $csv_file
+     *
+     * @return \Iterator
+     */
     function app_get_csv_data(string $csv_file): Iterator
     {
         $iterator = app_read_csv_file($csv_file);
@@ -286,6 +346,11 @@ if (!\function_exists('app_generate_random_string')) {
 }
 
 if (!\function_exists('app_add_attr_to_el')) {
+    /**
+     * @param  array<string,string|string[]>  $attr
+     *
+     * @return string
+     */
     function app_add_attr_to_el(array $attr): string
     {
         $attributes = [];
@@ -336,6 +401,12 @@ if (!\function_exists('app_get_dom_content')) {
 }
 
 if (!\function_exists('app_manifest')) {
+    /**
+     * @param  string  $manifest_file
+     * @param  string  $dist_dir
+     *
+     * @return \JazzMan\AppConfig\Manifest
+     */
     function app_manifest(string $manifest_file = 'dist/mix-manifest.json', string $dist_dir = 'dist'): Manifest
     {
         /** @var Manifest $manifest */
@@ -349,6 +420,11 @@ if (!\function_exists('app_manifest')) {
 }
 
 if (!function_exists('app_get_human_friendly')) {
+    /**
+     * @param  string  $name
+     *
+     * @return string
+     */
     function app_get_human_friendly(string $name = ''): string
     {
         return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
