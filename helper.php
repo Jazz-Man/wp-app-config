@@ -30,30 +30,45 @@ if (!function_exists('app_url_patch')) {
 if (!\function_exists('app_use_webp')) {
     function app_use_webp(): bool
     {
-        if (!empty($_SERVER['HTTP_ACCEPT']) && false !== \strpos($_SERVER['HTTP_ACCEPT'], 'image/webp')) {
+        $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => '/image\\/webp/',
+            ],
+        ]);
+
+        if (!empty($acceptWebp)) {
             return true;
         }
 
-        $UA = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : false;
+        $isGoogle = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+            'options' => [
+                'regexp' => '/\s+(Chrome\/|Googlebot\/)/i',
+            ],
+        ]);
 
-        if ($UA) {
-            if (false !== \strpos($UA, ' Chrome/')) {
-                return true;
-            }
+        if (!empty($isGoogle)){
+            return true;
+        }
 
-            if (false !== \strpos($UA, 'Safari') && ($result = \stristr($UA, 'Version'))) {
-                \preg_match('/(?:version\/(?<version>[\d.]+))?/i', $result, $matches);
-                if (!empty($matches['version']) && \version_compare($matches['version'], '13', '>=')) {
-                    return true;
-                }
-            }
+        $isSafari = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+            'options' => [
+                'regexp' => '/Version.[\d\.]*\s+Safari.[\d\.]*/i',
+            ],
+        ]);
 
-            if (false !== \strpos($UA, 'Firefox')) {
-                $result = \explode('/', \stristr($UA, 'Firefox'));
-                if (!empty($result[1]) && \version_compare($result[1], '65', '>=')) {
-                    return true;
-                }
-            }
+        $isFirefox = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP,[
+            'options' => [
+                'regexp' => '/\s+Firefox.[\d\.]*/i',
+            ],
+        ]);
+
+
+        if ($isSafari && (\preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))){
+            return true;
+        }
+
+        if ($isFirefox && (\preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='))){
+            return true;
         }
 
         return false;
@@ -78,11 +93,6 @@ if (!\function_exists('app_get_request_data')) {
 
 if (!\function_exists('app_json_decode')) {
     /**
-     * @param  string  $json
-     * @param  bool  $associative
-     * @param  int  $depth
-     * @param  int  $flags
-     *
      * @return mixed
      */
     function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0)
@@ -98,9 +108,6 @@ if (!\function_exists('app_json_decode')) {
 
 if (!\function_exists('app_files_in_path')) {
     /**
-     * @param  string  $folder
-     * @param  string  $pattern
-     * @param  int  $max_depth
      * @return \RegexIterator
      */
     function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
@@ -119,8 +126,6 @@ if (!\function_exists('app_files_in_path')) {
 
 if (!\function_exists('app_get_template')) {
     /**
-     * @param  string  $template
-     * @param  array  $attributes
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
@@ -145,7 +150,6 @@ if (!\function_exists('app_get_template')) {
 
 if (!\function_exists('app_base64_encode_data')) {
     /**
-     * @param  string  $str
      * @return bool|string
      */
     function app_base64_encode_data(string $str): string
@@ -206,7 +210,6 @@ if (!\function_exists('app_is_current_host')) {
 
 if (!\function_exists('app_read_csv_file')) {
     /**
-     * @param  string  $path
      * @return \Generator
      */
     function app_read_csv_file(string $path): Generator
@@ -248,8 +251,8 @@ if (!\function_exists('app_get_csv_data')) {
 
 if (!\function_exists('app_error_log')) {
     /**
-     * @param  \Exception  $exception
-     * @param  string  $error_code
+     * @param \Exception $exception
+     *
      * @return \WP_Error
      */
     function app_error_log(Exception $exception, string $error_code): WP_Error
@@ -267,9 +270,6 @@ if (!\function_exists('app_error_log')) {
 
 if (!\function_exists('app_generate_random_string')) {
     /**
-     * @param  string  $input
-     * @param  int  $strength
-     * @return string
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string
@@ -312,7 +312,6 @@ if (!\function_exists('app_add_attr_to_el')) {
 
 if (!\function_exists('app_get_dom_content')) {
     /**
-     * @param  string  $content
      * @return \DOMDocument
      */
     function app_get_dom_content(string $content): DOMDocument
