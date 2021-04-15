@@ -14,6 +14,11 @@ if (!function_exists('app_config')) {
 }
 
 if (!function_exists('app_dir_path')) {
+    /**
+     * @param  string  $path
+     *
+     * @return string
+     */
     function app_dir_path(string $path): string
     {
         return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
@@ -21,6 +26,11 @@ if (!function_exists('app_dir_path')) {
 }
 
 if (!function_exists('app_url_patch')) {
+    /**
+     * @param  string  $path
+     *
+     * @return string
+     */
     function app_url_path(string $path): string
     {
         return app_config()->get('root_url').'/'.trim($path, '/');
@@ -28,6 +38,9 @@ if (!function_exists('app_url_patch')) {
 }
 
 if (!\function_exists('app_use_webp')) {
+    /**
+     * @return bool
+     */
     function app_use_webp(): bool
     {
         $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
@@ -75,6 +88,9 @@ if (!\function_exists('app_use_webp')) {
 }
 
 if (!\function_exists('app_get_request_data')) {
+    /**
+     * @return \JazzMan\ParameterBag\ParameterBag
+     */
     function app_get_request_data(): ParameterBag
     {
         $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
@@ -97,6 +113,11 @@ if (!\function_exists('app_get_request_data')) {
 
 if (!\function_exists('app_json_decode')) {
     /**
+     * @param  string  $json
+     * @param  bool  $associative
+     * @param  int  $depth
+     * @param  int  $flags
+     *
      * @return mixed
      */
     function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0)
@@ -112,6 +133,9 @@ if (!\function_exists('app_json_decode')) {
 
 if (!\function_exists('app_files_in_path')) {
     /**
+     * @param  string  $folder
+     * @param  string  $pattern
+     * @param  int  $max_depth
      * @return \RegexIterator
      */
     function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
@@ -130,6 +154,8 @@ if (!\function_exists('app_files_in_path')) {
 
 if (!\function_exists('app_get_template')) {
     /**
+     * @param  string  $template
+     * @param  array  $attributes
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
@@ -154,6 +180,7 @@ if (!\function_exists('app_get_template')) {
 
 if (!\function_exists('app_base64_encode_data')) {
     /**
+     * @param  string  $str
      * @return bool|string
      */
     function app_base64_encode_data(string $str): string
@@ -167,6 +194,11 @@ if (!\function_exists('app_base64_encode_data')) {
 }
 
 if (!\function_exists('app_trim_string')) {
+    /**
+     * @param  string  $string
+     *
+     * @return string
+     */
     function app_trim_string(string $string): string
     {
         return \trim(\preg_replace('/\s{2,}/siu', ' ', $string));
@@ -174,26 +206,41 @@ if (!\function_exists('app_trim_string')) {
 }
 
 if (!\function_exists('app_get_current_relative_url')) {
+    /**
+     * @return string
+     */
     function app_get_current_relative_url(): string
     {
-        $_root_relative_current = untrailingslashit($_SERVER['REQUEST_URI']);
+        $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+
+        $currentRelative = untrailingslashit($requestUri);
 
         if (is_customize_preview()) {
-            $_root_relative_current = \strtok(untrailingslashit($_SERVER['REQUEST_URI']), '?');
+            $currentRelative = \strtok(untrailingslashit($requestUri), '?');
         }
 
-        return $_root_relative_current;
+        return $currentRelative;
     }
 }
 
 if (!\function_exists('app_get_current_url')) {
+    /**
+     * @return string
+     */
     function app_get_current_url(): string
     {
-        return set_url_scheme('https://'.$_SERVER['HTTP_HOST'].app_get_current_relative_url());
+        $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+
+        return set_url_scheme('https://'.$host.app_get_current_relative_url());
     }
 }
 
 if (!\function_exists('app_is_current_host')) {
+    /**
+     * @param  string  $url
+     *
+     * @return bool
+     */
     function app_is_current_host(string $url): bool
     {
         static $current_host;
@@ -214,6 +261,7 @@ if (!\function_exists('app_is_current_host')) {
 
 if (!\function_exists('app_read_csv_file')) {
     /**
+     * @param  string  $path
      * @return \Generator
      */
     function app_read_csv_file(string $path): Generator
@@ -229,6 +277,11 @@ if (!\function_exists('app_read_csv_file')) {
 }
 
 if (!\function_exists('app_get_csv_data')) {
+    /**
+     * @param  string  $csv_file
+     *
+     * @return \Iterator
+     */
     function app_get_csv_data(string $csv_file): Iterator
     {
         $iterator = app_read_csv_file($csv_file);
@@ -255,8 +308,8 @@ if (!\function_exists('app_get_csv_data')) {
 
 if (!\function_exists('app_error_log')) {
     /**
-     * @param \Exception $exception
-     *
+     * @param  \Exception  $exception
+     * @param  string  $error_code
      * @return \WP_Error
      */
     function app_error_log(Exception $exception, string $error_code): WP_Error
@@ -274,6 +327,9 @@ if (!\function_exists('app_error_log')) {
 
 if (!\function_exists('app_generate_random_string')) {
     /**
+     * @param  string  $input
+     * @param  int  $strength
+     * @return string
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string
@@ -290,6 +346,11 @@ if (!\function_exists('app_generate_random_string')) {
 }
 
 if (!\function_exists('app_add_attr_to_el')) {
+    /**
+     * @param  array<string,string|string[]>  $attr
+     *
+     * @return string
+     */
     function app_add_attr_to_el(array $attr): string
     {
         $attributes = [];
@@ -316,6 +377,7 @@ if (!\function_exists('app_add_attr_to_el')) {
 
 if (!\function_exists('app_get_dom_content')) {
     /**
+     * @param  string  $content
      * @return \DOMDocument
      */
     function app_get_dom_content(string $content): DOMDocument
@@ -339,6 +401,12 @@ if (!\function_exists('app_get_dom_content')) {
 }
 
 if (!\function_exists('app_manifest')) {
+    /**
+     * @param  string  $manifest_file
+     * @param  string  $dist_dir
+     *
+     * @return \JazzMan\AppConfig\Manifest
+     */
     function app_manifest(string $manifest_file = 'dist/mix-manifest.json', string $dist_dir = 'dist'): Manifest
     {
         /** @var Manifest $manifest */
@@ -352,6 +420,11 @@ if (!\function_exists('app_manifest')) {
 }
 
 if (!function_exists('app_get_human_friendly')) {
+    /**
+     * @param  string  $name
+     *
+     * @return string
+     */
     function app_get_human_friendly(string $name = ''): string
     {
         return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
