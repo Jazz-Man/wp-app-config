@@ -7,25 +7,23 @@ use JazzMan\ParameterBag\ParameterBag;
 if (!function_exists('app_config')) {
     function app_config(): ParameterBag
     {
-        return Config::getInstance()->getConfig();
+        return Config::getInstance()
+            ->getConfig()
+        ;
     }
 }
 
 if (!function_exists('app_dir_path')) {
-    function app_dir_path(string $path = ''): string
+    function app_dir_path(string $path): string
     {
-        $path = trim($path, DIRECTORY_SEPARATOR);
-
-        return app_config()->get('root_dir').DIRECTORY_SEPARATOR.$path;
+        return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
     }
 }
 
 if (!function_exists('app_url_patch')) {
-    function app_url_path(string $path = ''): string
+    function app_url_path(string $path): string
     {
-        $path = trim($path, '/');
-
-        return app_config()->get('root_url').'/'.$path;
+        return app_config()->get('root_url').'/'.trim($path, '/');
     }
 }
 
@@ -80,13 +78,16 @@ if (!\function_exists('app_get_request_data')) {
 
 if (!\function_exists('app_json_decode')) {
     /**
-     * @param mixed $json
+     * @param  string  $json
+     * @param  bool  $associative
+     * @param  int  $depth
+     * @param  int  $flags
      *
      * @return mixed
      */
-    function app_json_decode($json, bool $assoc = false, int $depth = 512, int $options = 0)
+    function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0)
     {
-        $data = \json_decode($json, $assoc, $depth, $options);
+        $data = \json_decode($json, $associative, $depth, $flags);
         if (JSON_ERROR_NONE !== \json_last_error()) {
             throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
         }
@@ -97,6 +98,9 @@ if (!\function_exists('app_json_decode')) {
 
 if (!\function_exists('app_files_in_path')) {
     /**
+     * @param  string  $folder
+     * @param  string  $pattern
+     * @param  int  $max_depth
      * @return \RegexIterator
      */
     function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
@@ -115,6 +119,8 @@ if (!\function_exists('app_files_in_path')) {
 
 if (!\function_exists('app_get_template')) {
     /**
+     * @param  string  $template
+     * @param  array  $attributes
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
@@ -139,9 +145,10 @@ if (!\function_exists('app_get_template')) {
 
 if (!\function_exists('app_base64_encode_data')) {
     /**
+     * @param  string  $str
      * @return bool|string
      */
-    function app_base64_encode_data(string $str)
+    function app_base64_encode_data(string $str): string
     {
         if (\base64_encode(\base64_decode($str, true)) === $str) {
             $str = \base64_decode($str);
@@ -178,8 +185,28 @@ if (!\function_exists('app_get_current_url')) {
     }
 }
 
+if (!\function_exists('app_is_current_host')) {
+    function app_is_current_host(string $url): bool
+    {
+        static $current_host;
+
+        if (null === $current_host) {
+            $current_host = parse_url(home_url(), PHP_URL_HOST);
+        }
+
+        if (!\filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+
+        $url_host = \parse_url($url, PHP_URL_HOST);
+
+        return !empty($url_host) && $current_host === $url_host;
+    }
+}
+
 if (!\function_exists('app_read_csv_file')) {
     /**
+     * @param  string  $path
      * @return \Generator
      */
     function app_read_csv_file(string $path): Generator
@@ -220,6 +247,11 @@ if (!\function_exists('app_get_csv_data')) {
 }
 
 if (!\function_exists('app_error_log')) {
+    /**
+     * @param  \Exception  $exception
+     * @param  string  $error_code
+     * @return \WP_Error
+     */
     function app_error_log(Exception $exception, string $error_code): WP_Error
     {
         $error = new WP_Error();
@@ -235,6 +267,9 @@ if (!\function_exists('app_error_log')) {
 
 if (!\function_exists('app_generate_random_string')) {
     /**
+     * @param  string  $input
+     * @param  int  $strength
+     * @return string
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string
@@ -277,6 +312,7 @@ if (!\function_exists('app_add_attr_to_el')) {
 
 if (!\function_exists('app_get_dom_content')) {
     /**
+     * @param  string  $content
      * @return \DOMDocument
      */
     function app_get_dom_content(string $content): DOMDocument
@@ -313,11 +349,6 @@ if (!\function_exists('app_manifest')) {
 }
 
 if (!function_exists('app_get_human_friendly')) {
-    /**
-     * @param  string  $name
-     *
-     * @return string
-     */
     function app_get_human_friendly(string $name = ''): string
     {
         return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
