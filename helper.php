@@ -430,3 +430,29 @@ if (!function_exists('app_get_human_friendly')) {
         return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
     }
 }
+
+if (!function_exists('app_locate_root_dir')){
+    /**
+     * @return false|string
+     */
+    function app_locate_root_dir()
+    {
+        static $path;
+
+        if (null === $path) {
+            $path = false;
+
+            if (\is_file(ABSPATH.'wp-config.php')) {
+                $path = ABSPATH;
+            } elseif (\is_file(\dirname(ABSPATH).'/wp-config.php') && !\is_file(\dirname(ABSPATH).'/wp-settings.php')) {
+                $path = \dirname(ABSPATH);
+            }
+
+            if ($path) {
+                $path = \realpath($path);
+            }
+        }
+
+        return $path;
+    }
+}
