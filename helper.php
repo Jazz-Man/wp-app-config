@@ -456,3 +456,27 @@ if (!function_exists('app_locate_root_dir')){
         return $path;
     }
 }
+
+if (!\function_exists('app_is_rest')) {
+    /**
+     * @param  string|null  $prefix
+     *
+     * @return bool
+     */
+    function app_is_rest(string $prefix = null): bool
+    {
+        $wp_rest_prefix = '/'.trailingslashit(rest_get_url_prefix());
+
+        if ($prefix !== null) {
+            $wp_rest_prefix .= ltrim($prefix, '/');
+        }
+
+        $regexp = preg_quote("$wp_rest_prefix",'/');
+
+        return (bool)filter_input(INPUT_SERVER,'REQUEST_URI',FILTER_VALIDATE_REGEXP,[
+            'options'=>[
+                'regexp' => "/^$regexp/"
+            ]
+        ]);
+    }
+}
