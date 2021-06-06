@@ -12,17 +12,20 @@ class Manifest
      * @var array
      */
     private $manifest = [];
-    private $dist_dir;
+    /**
+     * @var string
+     */
+    private $distDir;
 
-    public function __construct(string $manifest_file = 'dist/mix-manifest.json', string $dist_dir = 'dist')
+    public function __construct(string $manifestFile = 'dist/mix-manifest.json', string $distDir = 'dist')
     {
-        $manifest_file = app_dir_path($manifest_file);
+        $manifestFile = app_dir_path($manifestFile);
 
-        $this->dist_dir = $dist_dir;
+        $this->distDir = $distDir;
 
-        if (is_readable($manifest_file)) {
+        if (is_readable($manifestFile)) {
             try {
-                $manifest = file_get_contents($manifest_file);
+                $manifest = file_get_contents($manifestFile);
 
                 $this->manifest = app_json_decode($manifest, true);
             } catch (\Exception $exception) {
@@ -37,7 +40,7 @@ class Manifest
         if (!empty($this->manifest)) {
             $path = '/'.ltrim($path, '/');
 
-            return !empty($this->manifest[$path]) ? app_url_path("{$this->dist_dir}{$this->manifest[$path]}") : '';
+            return !empty($this->manifest[$path]) ? app_url_path("{$this->distDir}{$this->manifest[$path]}") : '';
         }
 
         return '';
@@ -48,7 +51,7 @@ class Manifest
         if (!empty($this->manifest)) {
             $path = '/'.ltrim($path, '/');
 
-            return !empty($this->manifest[$path]) ? app_dir_path("{$this->dist_dir}{$this->manifest[$path]}") : '';
+            return !empty($this->manifest[$path]) ? app_dir_path("{$this->distDir}{$this->manifest[$path]}") : '';
         }
 
         return '';
