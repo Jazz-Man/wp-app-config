@@ -37,10 +37,10 @@ class Manifest
 
     public function getUrl(string $path): string
     {
-        if (!empty($this->manifest)) {
+        if ( ! empty($this->manifest)) {
             $path = '/'.ltrim($path, '/');
 
-            return !empty($this->manifest[$path]) ? app_url_path("{$this->distDir}{$this->manifest[$path]}") : '';
+            return ! empty($this->manifest[$path]) ? app_url_path("{$this->distDir}{$this->manifest[$path]}") : '';
         }
 
         return '';
@@ -48,10 +48,10 @@ class Manifest
 
     public function getPath(string $path): string
     {
-        if (!empty($this->manifest)) {
+        if ( ! empty($this->manifest)) {
             $path = '/'.ltrim($path, '/');
 
-            return !empty($this->manifest[$path]) ? app_dir_path("{$this->distDir}{$this->manifest[$path]}") : '';
+            return ! empty($this->manifest[$path]) ? app_dir_path("{$this->distDir}{$this->manifest[$path]}") : '';
         }
 
         return '';

@@ -4,7 +4,7 @@ use JazzMan\AppConfig\Config;
 use JazzMan\AppConfig\Manifest;
 use JazzMan\ParameterBag\ParameterBag;
 
-if (!function_exists('app_config')) {
+if ( ! function_exists('app_config')) {
     function app_config(): ParameterBag
     {
         return Config::getInstance()
@@ -13,34 +13,21 @@ if (!function_exists('app_config')) {
     }
 }
 
-if (!function_exists('app_dir_path')) {
-    /**
-     * @param  string  $path
-     *
-     * @return string
-     */
+if ( ! function_exists('app_dir_path')) {
     function app_dir_path(string $path): string
     {
         return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
     }
 }
 
-if (!function_exists('app_url_patch')) {
-    /**
-     * @param  string  $path
-     *
-     * @return string
-     */
+if ( ! function_exists('app_url_patch')) {
     function app_url_path(string $path): string
     {
         return app_config()->get('root_url').'/'.trim($path, '/');
     }
 }
 
-if (!\function_exists('app_use_webp')) {
-    /**
-     * @return bool
-     */
+if ( ! function_exists('app_use_webp')) {
     function app_use_webp(): bool
     {
         $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
@@ -49,7 +36,7 @@ if (!\function_exists('app_use_webp')) {
             ],
         ]);
 
-        if (!empty($acceptWebp)) {
+        if ( ! empty($acceptWebp)) {
             return true;
         }
 
@@ -59,7 +46,7 @@ if (!\function_exists('app_use_webp')) {
             ],
         ]);
 
-        if (!empty($isGoogle)) {
+        if ( ! empty($isGoogle)) {
             return true;
         }
 
@@ -75,22 +62,15 @@ if (!\function_exists('app_use_webp')) {
             ],
         ]);
 
-        if ($isSafari && (\preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
+        if ($isSafari && (preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
             return true;
         }
 
-        if ($isFirefox && (\preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='))) {
-            return true;
-        }
-
-        return false;
+        return $isFirefox && (preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='));
     }
 }
 
-if (!\function_exists('app_get_request_data')) {
-    /**
-     * @return \JazzMan\ParameterBag\ParameterBag
-     */
+if ( ! function_exists('app_get_request_data')) {
     function app_get_request_data(): ParameterBag
     {
         $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
@@ -99,116 +79,91 @@ if (!\function_exists('app_get_request_data')) {
             ],
         ]);
 
-        if ($method) {
-            $_data = (array)filter_input_array('POST' === $method ? INPUT_POST : INPUT_GET);
-        } elseif (!empty($_REQUEST)) {
-            $_data = $_REQUEST;
-        } else {
-            $_data = [];
-        }
+        $data = $method ? filter_input_array(
+            'POST' === $method ? INPUT_POST : INPUT_GET
+        ) : ( ! empty($_REQUEST) ? $_REQUEST : []);
 
-        return new ParameterBag($_data);
+        return new ParameterBag($data);
     }
 }
 
-if (!\function_exists('app_json_decode')) {
+if ( ! function_exists('app_json_decode')) {
     /**
-     * @param  string  $json
-     * @param  bool  $associative
-     * @param  int  $depth
-     * @param  int  $flags
-     *
      * @return mixed
      */
     function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0)
     {
-        $data = \json_decode($json, $associative, $depth, $flags);
-        if (JSON_ERROR_NONE !== \json_last_error()) {
-            throw new InvalidArgumentException('json_decode error: '.\json_last_error_msg());
+        $data = json_decode($json, $associative, $depth, $flags);
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new InvalidArgumentException(sprintf('json_decode error: %s', json_last_error_msg()));
         }
 
         return $data;
     }
 }
 
-if (!\function_exists('app_files_in_path')) {
-    /**
-     * @param  string  $folder
-     * @param  string  $pattern
-     * @param  int  $max_depth
-     * @return \RegexIterator
-     */
-    function app_files_in_path(string $folder, string $pattern, int $max_depth = 1): RegexIterator
+if ( ! function_exists('app_files_in_path')) {
+    function app_files_in_path(string $folder, string $pattern, int $maxDepth = 1): RegexIterator
     {
-        if (!is_readable($folder)) {
+        if ( ! is_readable($folder)) {
             throw new InvalidArgumentException('folder is not exist');
         }
 
         $dir = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         $ite = new RecursiveIteratorIterator($dir, RecursiveIteratorIterator::SELF_FIRST);
-        $ite->setMaxDepth($max_depth);
+        $ite->setMaxDepth($maxDepth);
 
         return new RegexIterator($ite, $pattern);
     }
 }
 
-if (!\function_exists('app_get_template')) {
+if ( ! function_exists('app_get_template')) {
     /**
-     * @param  string  $template
-     * @param  array  $attributes
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = [])
     {
         $result = '';
 
-        $template_file = locate_template($template);
+        $templateFile = locate_template($template);
 
-        if (!empty($template_file)) {
-            if (!empty($attributes)) {
-                \extract($attributes, EXTR_OVERWRITE);
+        if ( ! empty($templateFile)) {
+            if ( ! empty($attributes)) {
+                extract($attributes, EXTR_OVERWRITE);
             }
 
-            \ob_start();
-            @include $template_file;
-            $result = \ob_get_clean();
+            ob_start();
+
+            include $templateFile;
+            $result = ob_get_clean();
         }
 
         return $result;
     }
 }
 
-if (!\function_exists('app_base64_encode_data')) {
+if ( ! function_exists('app_base64_encode_data')) {
     /**
-     * @param  string  $str
      * @return bool|string
      */
     function app_base64_encode_data(string $str): string
     {
-        if (\base64_encode(\base64_decode($str, true)) === $str) {
-            $str = \base64_decode($str);
+        if (base64_encode(base64_decode($str, true)) === $str) {
+            $str = base64_decode($str);
         }
 
         return $str;
     }
 }
 
-if (!\function_exists('app_trim_string')) {
-    /**
-     * @param  string  $string
-     *
-     * @return string
-     */
+if ( ! function_exists('app_trim_string')) {
     function app_trim_string(string $string): string
     {
-        return \trim(\preg_replace('/\s{2,}/siu', ' ', $string));
+        return trim(preg_replace('/\s{2,}/siu', ' ', $string));
     }
 }
 
-if (!\function_exists('app_get_current_relative_url')) {
-    /**
-     * @return string
-     */
+if ( ! function_exists('app_get_current_relative_url')) {
     function app_get_current_relative_url(): string
     {
         $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
@@ -216,17 +171,14 @@ if (!\function_exists('app_get_current_relative_url')) {
         $currentRelative = untrailingslashit($requestUri);
 
         if (is_customize_preview()) {
-            $currentRelative = \strtok(untrailingslashit($requestUri), '?');
+            $currentRelative = strtok(untrailingslashit($requestUri), '?');
         }
 
         return $currentRelative;
     }
 }
 
-if (!\function_exists('app_get_current_url')) {
-    /**
-     * @return string
-     */
+if ( ! function_exists('app_get_current_url')) {
     function app_get_current_url(): string
     {
         $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
@@ -235,12 +187,7 @@ if (!\function_exists('app_get_current_url')) {
     }
 }
 
-if (!\function_exists('app_is_current_host')) {
-    /**
-     * @param  string  $url
-     *
-     * @return bool
-     */
+if ( ! function_exists('app_is_current_host')) {
     function app_is_current_host(string $url): bool
     {
         static $current_host;
@@ -249,54 +196,51 @@ if (!\function_exists('app_is_current_host')) {
             $current_host = parse_url(home_url(), PHP_URL_HOST);
         }
 
-        if (!\filter_var($url, FILTER_VALIDATE_URL)) {
+        if ( ! filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
         }
 
-        $url_host = \parse_url($url, PHP_URL_HOST);
+        $url_host = parse_url($url, PHP_URL_HOST);
 
-        return !empty($url_host) && $current_host === $url_host;
+        return ! empty($url_host) && $current_host === $url_host;
     }
 }
 
-if (!\function_exists('app_read_csv_file')) {
+if ( ! function_exists('app_read_csv_file')) {
     /**
-     * @param  string  $path
      * @return \Generator
      */
     function app_read_csv_file(string $path): Generator
     {
-        if (\is_file($path)) {
-            $handle = \fopen($path, 'rb');
-            while (!\feof($handle)) {
-                yield \fgetcsv($handle);
+        if (is_file($path)) {
+            $handle = fopen($path, 'rb');
+            while ( ! feof($handle)) {
+                yield fgetcsv($handle);
             }
-            \fclose($handle);
+            fclose($handle);
         }
     }
 }
 
-if (!\function_exists('app_get_csv_data')) {
+if ( ! function_exists('app_get_csv_data')) {
     /**
-     * @param  string  $csv_file
-     *
      * @return \Iterator
      */
-    function app_get_csv_data(string $csv_file): Iterator
+    function app_get_csv_data(string $csvFile): Iterator
     {
-        $iterator = app_read_csv_file($csv_file);
+        $iterator = app_read_csv_file($csvFile);
 
         $first_line = $iterator->current();
-        $first_line_count = \count($first_line);
+        $first_line_count = count($first_line);
 
         return iter\map(
             static function ($value) use ($first_line, $first_line_count) {
-                if (!\is_array($value)) {
+                if ( ! is_array($value)) {
                     return false;
                 }
-                $value_count = \count($value);
+                $value_count = count($value);
                 if ($value !== $first_line && $first_line_count === $value_count) {
-                    return \array_combine($first_line, $value);
+                    return array_combine($first_line, $value);
                 }
 
                 return false;
@@ -306,64 +250,57 @@ if (!\function_exists('app_get_csv_data')) {
     }
 }
 
-if (!\function_exists('app_error_log')) {
+if ( ! function_exists('app_error_log')) {
     /**
-     * @param  \Exception  $exception
-     * @param  string  $error_code
-     * @return \WP_Error
+     * @param \Exception $exception
      */
-    function app_error_log(Exception $exception, string $error_code): WP_Error
+    function app_error_log(Exception $exception, string $errorCode): WP_Error
     {
         $error = new WP_Error();
-        if (\defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
-            \error_log($exception);
+        if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log($exception);
         }
 
-        $error->add($error_code, $exception->getMessage());
+        $error->add($errorCode, $exception->getMessage());
 
         return $error;
     }
 }
 
-if (!\function_exists('app_generate_random_string')) {
+if ( ! function_exists('app_generate_random_string')) {
     /**
-     * @param  string  $input
-     * @param  int  $strength
-     * @return string
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string
     {
-        $input_length = \strlen($input);
+        $input_length = strlen($input);
         $random_string = '';
         for ($i = 0; $i < $strength; ++$i) {
-            $random_character = $input[\random_int(0, $input_length - 1)];
+            $random_character = $input[random_int(0, $input_length - 1)];
             $random_string .= $random_character;
         }
 
-        return \strtoupper($random_string);
+        return strtoupper($random_string);
     }
 }
 
-if (!\function_exists('app_add_attr_to_el')) {
+if ( ! function_exists('app_add_attr_to_el')) {
     /**
-     * @param  array<string,string|string[]>  $attr
-     *
-     * @return string
+     * @param array<string,string|string[]> $attr
      */
     function app_add_attr_to_el(array $attr): string
     {
         $attributes = [];
         foreach ($attr as $key => $value) {
-            if (\is_array($value)) {
-                $value = \implode(' ', \array_filter($value));
+            if (is_array($value)) {
+                $value = implode(' ', array_filter($value));
             }
             if ('class' === $key && '' === $value) {
                 continue;
             }
 
-            if (!\is_bool($value)) {
-                $attributes[] = \sprintf('%s="%s"', esc_attr($key), esc_attr($value));
+            if ( ! is_bool($value)) {
+                $attributes[] = sprintf('%s="%s"', esc_attr($key), esc_attr($value));
             }
 
             if (true === $value) {
@@ -371,25 +308,21 @@ if (!\function_exists('app_add_attr_to_el')) {
             }
         }
 
-        return ' '.\implode(' ', $attributes);
+        return ' '.implode(' ', $attributes);
     }
 }
 
-if (!\function_exists('app_get_dom_content')) {
-    /**
-     * @param  string  $content
-     * @return \DOMDocument
-     */
+if ( ! function_exists('app_get_dom_content')) {
     function app_get_dom_content(string $content): DOMDocument
     {
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->encoding = 'UTF-8';
-        \libxml_use_internal_errors(true);
+        libxml_use_internal_errors(true);
 
-        $content = \str_replace(PHP_EOL, null, $content);
-        $content = \mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
+        $content = str_replace(PHP_EOL, null, $content);
+        $content = mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
 
         $dom->loadHTML(
             $content,
@@ -400,38 +333,27 @@ if (!\function_exists('app_get_dom_content')) {
     }
 }
 
-if (!\function_exists('app_manifest')) {
-    /**
-     * @param  string  $manifest_file
-     * @param  string  $dist_dir
-     *
-     * @return \JazzMan\AppConfig\Manifest
-     */
-    function app_manifest(string $manifest_file = 'dist/mix-manifest.json', string $dist_dir = 'dist'): Manifest
+if ( ! function_exists('app_manifest')) {
+    function app_manifest(string $manifestFile = 'dist/mix-manifest.json', string $distDir = 'dist'): Manifest
     {
         /** @var Manifest $manifest */
         static $manifest;
         if (empty($manifest)) {
-            $manifest = Manifest::getInstance($manifest_file, $dist_dir);
+            $manifest = Manifest::getInstance($manifestFile, $distDir);
         }
 
         return $manifest;
     }
 }
 
-if (!function_exists('app_get_human_friendly')) {
-    /**
-     * @param  string  $name
-     *
-     * @return string
-     */
+if ( ! function_exists('app_get_human_friendly')) {
     function app_get_human_friendly(string $name = ''): string
     {
         return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
     }
 }
 
-if (!function_exists('app_locate_root_dir')){
+if ( ! function_exists('app_locate_root_dir')) {
     /**
      * @return false|string
      */
@@ -442,14 +364,14 @@ if (!function_exists('app_locate_root_dir')){
         if (null === $path) {
             $path = false;
 
-            if (\is_file(ABSPATH.'wp-config.php')) {
+            if (is_file(ABSPATH.'wp-config.php')) {
                 $path = ABSPATH;
-            } elseif (\is_file(\dirname(ABSPATH).'/wp-config.php') && !\is_file(\dirname(ABSPATH).'/wp-settings.php')) {
-                $path = \dirname(ABSPATH);
+            } elseif (is_file(dirname(ABSPATH).'/wp-config.php') && ! is_file(dirname(ABSPATH).'/wp-settings.php')) {
+                $path = dirname(ABSPATH);
             }
 
             if ($path) {
-                $path = \realpath($path);
+                $path = realpath($path);
             }
         }
 
@@ -457,26 +379,21 @@ if (!function_exists('app_locate_root_dir')){
     }
 }
 
-if (!\function_exists('app_is_rest')) {
-    /**
-     * @param  string|null  $prefix
-     *
-     * @return bool
-     */
-    function app_is_rest(string $prefix = null): bool
+if ( ! function_exists('app_is_rest')) {
+    function app_is_rest(?string $prefix = null): bool
     {
         $wp_rest_prefix = '/'.trailingslashit(rest_get_url_prefix());
 
-        if ($prefix !== null) {
+        if (null !== $prefix) {
             $wp_rest_prefix .= ltrim($prefix, '/');
         }
 
-        $regexp = preg_quote("$wp_rest_prefix",'/');
+        $regexp = preg_quote("$wp_rest_prefix", '/');
 
-        return (bool)filter_input(INPUT_SERVER,'REQUEST_URI',FILTER_VALIDATE_REGEXP,[
-            'options'=>[
-                'regexp' => "/^$regexp/"
-            ]
+        return (bool) filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_VALIDATE_REGEXP, [
+            'options' => [
+                'regexp' => "/^$regexp/",
+            ],
         ]);
     }
 }
