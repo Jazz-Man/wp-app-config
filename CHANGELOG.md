@@ -1,7 +1,13 @@
 
+2.1.6 / 2021-06-06
+==================
+
+
+
 2.1.5 / 2021-06-06
 ==================
 
+  * update CHANGELOG.md
   * fix code style
   * update naming
   * install phpmd
