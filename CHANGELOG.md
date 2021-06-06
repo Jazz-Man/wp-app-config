@@ -2,7 +2,8 @@
 2.1.6 / 2021-06-06
 ==================
 
-
+  * update CHANGELOG.md
+  * fix PHP Fatal error: Uncaught InvalidArgumentException: Passed variable is not an array or object
 
 2.1.5 / 2021-06-06
 ==================
