@@ -83,7 +83,7 @@ if ( ! function_exists('app_get_request_data')) {
             'POST' === $method ? INPUT_POST : INPUT_GET
         ) : ( ! empty($_REQUEST) ? $_REQUEST : []);
 
-        return new ParameterBag($data);
+        return new ParameterBag((array) $data);
     }
 }
 
