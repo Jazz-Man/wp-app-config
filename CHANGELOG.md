@@ -1,7 +1,22 @@
 
+2.1.5 / 2021-06-06
+==================
+
+  * fix code style
+  * update naming
+  * install phpmd
+  * added function for "app_is_rest" for checking if its REST API request
+  * Upgrade to GitHub-native Dependabot
+
+2.1.4 / 2021-05-16
+==================
+
+  * added app_locate_root_dir function
+
 2.1.3 / 2021-04-15
 ==================
 
+  * update changelog
   * fix return array
 
 2.1.2 / 2021-04-15
