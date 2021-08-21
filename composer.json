@@ -18,8 +18,7 @@
     "require": {
         "php": ">=7.1",
         "jazzman/parameter-bag": "^1.0",
-        "jazzman/singleton-trait": "^1.1",
-        "nikic/iter": "^2.1"
+        "jazzman/singleton-trait": "^1.1"
     },
     "autoload": {
         "psr-4": {
