@@ -1,5 +1,6 @@
 {
     "name": "jazzman/wp-app-config",
+    "description": "",
     "license": "MIT",
     "authors": [
         {
@@ -17,9 +18,7 @@
     "require": {
         "php": ">=7.1",
         "jazzman/parameter-bag": "^1.0",
-        "jazzman/singleton-trait": "^1.1",
-        "nikic/iter": "^2.1",
-        "roots/wordpress": "^5"
+        "jazzman/singleton-trait": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -30,16 +29,6 @@
         ]
     },
     "require-dev": {
-        "phpmd/phpmd": "@stable",
         "roave/security-advisories": "dev-master"
-    },
-    "extra": {
-        "installer-paths": {
-            "vendor/wp/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
-            "vendor/wp/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
-            "vendor/wp/wp-content/themes/{$name}/": ["type:wordpress-theme"]
-        },
-        "wordpress-install-dir": "vendor/wp"
-    },
-    "description": ""
+    }
 }
