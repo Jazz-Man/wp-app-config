@@ -4,39 +4,35 @@ use JazzMan\AppConfig\Config;
 use JazzMan\AppConfig\Manifest;
 use JazzMan\ParameterBag\ParameterBag;
 
-if ( ! function_exists('app_config')) {
-    function app_config(): ParameterBag
-    {
+if (!function_exists('app_config')) {
+    function app_config(): ParameterBag {
         return Config::getInstance()
             ->getConfig()
         ;
     }
 }
 
-if ( ! function_exists('app_dir_path')) {
-    function app_dir_path(string $path): string
-    {
+if (!function_exists('app_dir_path')) {
+    function app_dir_path(string $path): string {
         return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
     }
 }
 
-if ( ! function_exists('app_url_patch')) {
-    function app_url_path(string $path): string
-    {
+if (!function_exists('app_url_patch')) {
+    function app_url_path(string $path): string {
         return app_config()->get('root_url').'/'.trim($path, '/');
     }
 }
 
-if ( ! function_exists('app_use_webp')) {
-    function app_use_webp(): bool
-    {
+if (!function_exists('app_use_webp')) {
+    function app_use_webp(): bool {
         $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/image\\/webp/',
             ],
         ]);
 
-        if ( ! empty($acceptWebp)) {
+        if (!empty($acceptWebp)) {
             return true;
         }
 
@@ -46,7 +42,7 @@ if ( ! function_exists('app_use_webp')) {
             ],
         ]);
 
-        if ( ! empty($isGoogle)) {
+        if (!empty($isGoogle)) {
             return true;
         }
 
@@ -70,9 +66,8 @@ if ( ! function_exists('app_use_webp')) {
     }
 }
 
-if ( ! function_exists('app_get_request_data')) {
-    function app_get_request_data(): ParameterBag
-    {
+if (!function_exists('app_get_request_data')) {
+    function app_get_request_data(): ParameterBag {
         $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/get|post/i',
@@ -81,19 +76,19 @@ if ( ! function_exists('app_get_request_data')) {
 
         $data = $method ? filter_input_array(
             'POST' === $method ? INPUT_POST : INPUT_GET
-        ) : ( ! empty($_REQUEST) ? $_REQUEST : []);
+        ) : (!empty($_REQUEST) ? $_REQUEST : []);
 
         return new ParameterBag((array) $data);
     }
 }
 
-if ( ! function_exists('app_json_decode')) {
+if (!function_exists('app_json_decode')) {
     /**
      * @return mixed
      */
-    function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0)
-    {
+    function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0) {
         $data = json_decode($json, $associative, $depth, $flags);
+
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new InvalidArgumentException(sprintf('json_decode error: %s', json_last_error_msg()));
         }
@@ -102,10 +97,9 @@ if ( ! function_exists('app_json_decode')) {
     }
 }
 
-if ( ! function_exists('app_files_in_path')) {
-    function app_files_in_path(string $folder, string $pattern, int $maxDepth = 1): RegexIterator
-    {
-        if ( ! is_readable($folder)) {
+if (!function_exists('app_files_in_path')) {
+    function app_files_in_path(string $folder, string $pattern, int $maxDepth = 1): RegexIterator {
+        if (!is_readable($folder)) {
             throw new InvalidArgumentException('folder is not exist');
         }
 
@@ -117,18 +111,17 @@ if ( ! function_exists('app_files_in_path')) {
     }
 }
 
-if ( ! function_exists('app_get_template')) {
+if (!function_exists('app_get_template')) {
     /**
      * @return false|string
      */
-    function app_get_template(string $template, array $attributes = [])
-    {
+    function app_get_template(string $template, array $attributes = []) {
         $result = '';
 
         $templateFile = locate_template($template);
 
-        if ( ! empty($templateFile)) {
-            if ( ! empty($attributes)) {
+        if (!empty($templateFile)) {
+            if (!empty($attributes)) {
                 extract($attributes, EXTR_OVERWRITE);
             }
 
@@ -142,30 +135,27 @@ if ( ! function_exists('app_get_template')) {
     }
 }
 
-if ( ! function_exists('app_base64_encode_data')) {
+if (!function_exists('app_base64_encode_data')) {
     /**
      * @return bool|string
      */
-    function app_base64_encode_data(string $str): string
-    {
+    function app_base64_encode_data(string $str): string {
         if (base64_encode(base64_decode($str, true)) === $str) {
-            $str = base64_decode($str);
+            $str = base64_decode($str, true);
         }
 
         return $str;
     }
 }
 
-if ( ! function_exists('app_trim_string')) {
-    function app_trim_string(string $string): string
-    {
+if (!function_exists('app_trim_string')) {
+    function app_trim_string(string $string): string {
         return trim(preg_replace('/\s{2,}/siu', ' ', $string));
     }
 }
 
-if ( ! function_exists('app_get_current_relative_url')) {
-    function app_get_current_relative_url(): string
-    {
+if (!function_exists('app_get_current_relative_url')) {
+    function app_get_current_relative_url(): string {
         $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
 
         $currentRelative = untrailingslashit($requestUri);
@@ -178,85 +168,39 @@ if ( ! function_exists('app_get_current_relative_url')) {
     }
 }
 
-if ( ! function_exists('app_get_current_url')) {
-    function app_get_current_url(): string
-    {
+if (!function_exists('app_get_current_url')) {
+    function app_get_current_url(): string {
         $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
 
         return set_url_scheme('https://'.$host.app_get_current_relative_url());
     }
 }
 
-if ( ! function_exists('app_is_current_host')) {
-    function app_is_current_host(string $url): bool
-    {
-        static $current_host;
+if (!function_exists('app_is_current_host')) {
+    function app_is_current_host(string $url): bool {
+        static $currentHost;
 
-        if (null === $current_host) {
-            $current_host = parse_url(home_url(), PHP_URL_HOST);
+        if (null === $currentHost) {
+            $currentHost = parse_url(home_url(), PHP_URL_HOST);
         }
 
-        if ( ! filter_var($url, FILTER_VALIDATE_URL)) {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
             return false;
         }
 
-        $url_host = parse_url($url, PHP_URL_HOST);
+        $host = parse_url($url, PHP_URL_HOST);
 
-        return ! empty($url_host) && $current_host === $url_host;
+        return !empty($host) && $currentHost === $host;
     }
 }
 
-if ( ! function_exists('app_read_csv_file')) {
-    /**
-     * @return \Generator
-     */
-    function app_read_csv_file(string $path): Generator
-    {
-        if (is_file($path)) {
-            $handle = fopen($path, 'rb');
-            while ( ! feof($handle)) {
-                yield fgetcsv($handle);
-            }
-            fclose($handle);
-        }
-    }
-}
-
-if ( ! function_exists('app_get_csv_data')) {
-    /**
-     * @return \Iterator
-     */
-    function app_get_csv_data(string $csvFile): Iterator
-    {
-        $iterator = app_read_csv_file($csvFile);
-
-        $first_line = $iterator->current();
-        $first_line_count = count($first_line);
-
-        return iter\map(
-            static function ($value) use ($first_line, $first_line_count) {
-                if ( ! is_array($value)) {
-                    return false;
-                }
-                $value_count = count($value);
-                if ($value !== $first_line && $first_line_count === $value_count) {
-                    return array_combine($first_line, $value);
-                }
-
-                return false;
-            },
-            $iterator
-        );
-    }
-}
-
-if ( ! function_exists('app_error_log')) {
+if (!function_exists('app_error_log')) {
     /**
      * @param \Exception $exception
      */
-    function app_error_log(Exception $exception, string $errorCode): WP_Error
-    {
+    function app_error_log(Exception $exception, string $errorCode): WP_Error {
         $error = new WP_Error();
+
         if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
             error_log($exception);
         }
@@ -267,14 +211,14 @@ if ( ! function_exists('app_error_log')) {
     }
 }
 
-if ( ! function_exists('app_generate_random_string')) {
+if (!function_exists('app_generate_random_string')) {
     /**
      * @throws \Exception
      */
-    function app_generate_random_string(string $input, int $strength = 16): string
-    {
+    function app_generate_random_string(string $input, int $strength = 16): string {
         $input_length = strlen($input);
         $random_string = '';
+
         for ($i = 0; $i < $strength; ++$i) {
             $random_character = $input[random_int(0, $input_length - 1)];
             $random_string .= $random_character;
@@ -284,23 +228,32 @@ if ( ! function_exists('app_generate_random_string')) {
     }
 }
 
-if ( ! function_exists('app_add_attr_to_el')) {
+if (!function_exists('app_add_attr_to_el')) {
     /**
-     * @param array<string,string|string[]> $attr
+     * @param array<string,null|bool|int|string|string[]> $attr
      */
-    function app_add_attr_to_el(array $attr): string
-    {
+    function app_add_attr_to_el(array $attr): string {
         $attributes = [];
+
+        $separator = ' ';
+
         foreach ($attr as $key => $value) {
             if (is_array($value)) {
-                $value = implode(' ', array_filter($value));
+                $value = implode($separator, array_filter($value));
             }
+
             if ('class' === $key && '' === $value) {
                 continue;
             }
 
-            if ( ! is_bool($value)) {
-                $attributes[] = sprintf('%s="%s"', esc_attr($key), esc_attr($value));
+            $is_url = in_array($key, ['src', 'href'], true);
+
+            if (!is_bool($value)) {
+                $attributes[] = sprintf(
+                    '%s="%s"',
+                    esc_attr($key),
+                    $is_url ? esc_url($value) : esc_attr($value)
+                );
             }
 
             if (true === $value) {
@@ -308,13 +261,12 @@ if ( ! function_exists('app_add_attr_to_el')) {
             }
         }
 
-        return ' '.implode(' ', $attributes);
+        return $separator.implode($separator, $attributes);
     }
 }
 
-if ( ! function_exists('app_get_dom_content')) {
-    function app_get_dom_content(string $content): DOMDocument
-    {
+if (!function_exists('app_get_dom_content')) {
+    function app_get_dom_content(string $content): DOMDocument {
         $dom = new DOMDocument('1.0', 'UTF-8');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
@@ -333,11 +285,11 @@ if ( ! function_exists('app_get_dom_content')) {
     }
 }
 
-if ( ! function_exists('app_manifest')) {
-    function app_manifest(string $manifestFile = 'dist/mix-manifest.json', string $distDir = 'dist'): Manifest
-    {
+if (!function_exists('app_manifest')) {
+    function app_manifest(string $manifestFile = 'dist/mix-manifest.json', string $distDir = 'dist'): Manifest {
         /** @var Manifest $manifest */
         static $manifest;
+
         if (empty($manifest)) {
             $manifest = Manifest::getInstance($manifestFile, $distDir);
         }
@@ -346,19 +298,37 @@ if ( ! function_exists('app_manifest')) {
     }
 }
 
-if ( ! function_exists('app_get_human_friendly')) {
-    function app_get_human_friendly(string $name = ''): string
-    {
-        return ucwords(strtolower(str_replace(['-', '_'], ' ', $name)));
+if (!function_exists('app_strtolower')) {
+    function app_strtolower(string $string): string {
+        if (function_exists('mb_strtolower')) {
+            return mb_strtolower($string, 'UTF-8');
+        }
+
+        return strtolower($string);
     }
 }
 
-if ( ! function_exists('app_locate_root_dir')) {
+if (!function_exists('app_ucwords')) {
+    function app_ucwords(string $string): string {
+        if (function_exists('mb_convert_case')) {
+            return mb_convert_case($string, MB_CASE_TITLE, 'UTF-8');
+        }
+
+        return ucwords($string);
+    }
+}
+
+if (!function_exists('app_get_human_friendly')) {
+    function app_get_human_friendly(string $name): string {
+        return app_ucwords(app_strtolower(str_replace(['-', '_'], ' ', $name)));
+    }
+}
+
+if (!function_exists('app_locate_root_dir')) {
     /**
      * @return false|string
      */
-    function app_locate_root_dir()
-    {
+    function app_locate_root_dir() {
         static $path;
 
         if (null === $path) {
@@ -366,7 +336,7 @@ if ( ! function_exists('app_locate_root_dir')) {
 
             if (is_file(ABSPATH.'wp-config.php')) {
                 $path = ABSPATH;
-            } elseif (is_file(dirname(ABSPATH).'/wp-config.php') && ! is_file(dirname(ABSPATH).'/wp-settings.php')) {
+            } elseif (is_file(dirname(ABSPATH).'/wp-config.php') && !is_file(dirname(ABSPATH).'/wp-settings.php')) {
                 $path = dirname(ABSPATH);
             }
 
@@ -379,20 +349,19 @@ if ( ! function_exists('app_locate_root_dir')) {
     }
 }
 
-if ( ! function_exists('app_is_rest')) {
-    function app_is_rest(?string $prefix = null): bool
-    {
-        $wp_rest_prefix = '/'.trailingslashit(rest_get_url_prefix());
+if (!function_exists('app_is_rest')) {
+    function app_is_rest(?string $prefix = null): bool {
+        $wpRestPrefix = '/'.trailingslashit(rest_get_url_prefix());
 
         if (null !== $prefix) {
-            $wp_rest_prefix .= ltrim($prefix, '/');
+            $wpRestPrefix .= ltrim($prefix, '/');
         }
 
-        $regexp = preg_quote("$wp_rest_prefix", '/');
+        $regexp = preg_quote("{$wpRestPrefix}", '/');
 
         return (bool) filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_VALIDATE_REGEXP, [
             'options' => [
-                'regexp' => "/^$regexp/",
+                'regexp' => "/^{$regexp}/",
             ],
         ]);
     }

@@ -8,8 +8,7 @@ use JazzMan\Traits\SingletonTrait;
 /**
  * Class Config.
  */
-class Config
-{
+class Config {
     use SingletonTrait;
 
     /**
@@ -17,8 +16,7 @@ class Config
      */
     private $config;
 
-    public function __construct()
-    {
+    public function __construct() {
         $config = apply_filters('wp_app_config', [
             'root_dir' => get_stylesheet_directory(),
             'root_url' => get_stylesheet_directory_uri(),
@@ -27,8 +25,7 @@ class Config
         $this->config = new ParameterBag($config);
     }
 
-    public function getConfig(): ParameterBag
-    {
+    public function getConfig(): ParameterBag {
         return $this->config;
     }
 }
