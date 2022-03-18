@@ -16,7 +16,7 @@
         "apcu-autoloader": true
     },
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.4",
         "jazzman/parameter-bag": "^1.0",
         "jazzman/singleton-trait": "^1.1"
     },
@@ -25,10 +25,24 @@
             "JazzMan\\AppConfig\\":"src"
         },
         "files": [
-            "helper.php"
+            "src/helper.php"
         ]
     },
     "require-dev": {
-        "roave/security-advisories": "dev-master"
+        "jazzman/php-cs-fixer-rules": "^0.1.1",
+        "roave/security-advisories": "dev-master",
+        "roots/wordpress": "^5.9"
+    },
+    "extra": {
+        "installer-paths": {
+            "vendor/wp/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
+            "vendor/wp/wp-content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "vendor/wp/wp-content/themes/{$name}/": ["type:wordpress-theme"]
+        },
+        "wordpress-install-dir": "vendor/wp"
+    },
+    "scripts": {
+        "php-cs-fixer": "php-cs-fixer fix -v --diff",
+        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/,vendor/'"
     }
 }
