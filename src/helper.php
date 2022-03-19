@@ -324,6 +324,33 @@ if (!function_exists('app_get_human_friendly')) {
     }
 }
 
+if (!function_exists('app_string_slugify')) {
+    function app_string_slugify(string $string): string {
+        $separator = '-';
+
+        if (class_exists(Normalizer::class)) {
+            $string = Normalizer::normalize($string);
+        }
+
+        $string = trim(strip_tags($string));
+
+        if (function_exists('transliterator_transliterate')) {
+            $string = transliterator_transliterate('Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower()', $string);
+        } else {
+            $string = preg_replace([
+                '/[[:punct:]]/',
+                '#[^A-Za-z1-9]#',
+            ], $separator, $string);
+
+            $string = app_strtolower($string);
+        }
+
+        $string = preg_replace('/[-\s]+/', $separator, $string);
+
+        return trim($string, $separator);
+    }
+}
+
 if (!function_exists('app_locate_root_dir')) {
     /**
      * @return false|string
