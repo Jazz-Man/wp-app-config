@@ -332,10 +332,10 @@ if (!function_exists('app_string_slugify')) {
             $string = Normalizer::normalize($string);
         }
 
-        $string = trim(strip_tags($string));
+        $string = wp_strip_all_tags($string, true);
 
         if (function_exists('transliterator_transliterate')) {
-            $string = transliterator_transliterate('Any-Latin; NFD; [:Nonspacing Mark:] Remove; NFC; [:Punctuation:] Remove; Lower()', $string);
+            $string = transliterator_transliterate('Any-Latin; Latin-ASCII; NFD; [:Nonspacing Mark:] Remove; NFC; Lower();', $string);
         } else {
             $string = preg_replace([
                 '/[[:punct:]]/',
@@ -344,6 +344,8 @@ if (!function_exists('app_string_slugify')) {
 
             $string = app_strtolower($string);
         }
+
+        $string = preg_replace('/[^A-Za-z0-9_-]/', $separator, $string);
 
         $string = preg_replace('/[-\s]+/', $separator, $string);
 
