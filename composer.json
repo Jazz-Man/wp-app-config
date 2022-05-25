@@ -31,7 +31,7 @@
     "require-dev": {
         "jazzman/php-cs-fixer-rules": "^0.1.1",
         "roave/security-advisories": "dev-master",
-        "roots/wordpress": "^5.9"
+        "roots/wordpress": "^6.0"
     },
     "extra": {
         "installer-paths": {
