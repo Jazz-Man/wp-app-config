@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<files psalm-version="4.x-dev@">
+  <file src="src/helper.php">
+    <ArgumentTypeCoercion occurrences="1">
+      <code>$content</code>
+    </ArgumentTypeCoercion>
+    <ImplicitToStringCast occurrences="2">
+      <code>$exception</code>
+      <code>$exception</code>
+    </ImplicitToStringCast>
+    <MixedAssignment occurrences="8">
+      <code>$acceptWebp</code>
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+      <code>$data</code>
+      <code>$isGoogle</code>
+      <code>$manifest</code>
+      <code>$method</code>
+    </MixedAssignment>
+    <MixedInferredReturnType occurrences="2">
+      <code>false|string</code>
+      <code>null|array&lt;string,string&gt;</code>
+    </MixedInferredReturnType>
+    <MixedReturnStatement occurrences="2">
+      <code>$manifest</code>
+      <code>$path</code>
+    </MixedReturnStatement>
+    <RedundantCast occurrences="1">
+      <code>(string) Normalizer::normalize($string)</code>
+    </RedundantCast>
+    <RedundantCondition occurrences="1">
+      <code>WP_DEBUG_LOG</code>
+    </RedundantCondition>
+    <UnresolvableInclude occurrences="1">
+      <code>include $templateFile</code>
+    </UnresolvableInclude>
+  </file>
+</files>
