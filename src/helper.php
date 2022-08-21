@@ -1,32 +1,68 @@
 <?php
 
-use JazzMan\AppConfig\Config;
-use JazzMan\AppConfig\Manifest;
 use JazzMan\ParameterBag\ParameterBag;
 
-if (!function_exists('app_config')) {
-    function app_config(): ParameterBag {
-        return Config::getInstance()
-            ->getConfig()
-        ;
+if (!function_exists('app_dir_path')) {
+    function app_dir_path(string $path, string $scheme = 'stylesheet'): string {
+        static $_scheme;
+
+        if (null === $_scheme) {
+            $upload = wp_upload_dir();
+
+            $_scheme['parent'] = get_template_directory();
+            $_scheme['stylesheet'] = get_stylesheet_directory();
+            $_scheme['upload'] = $upload['basedir'];
+        }
+
+        if (empty($_scheme[$scheme])) {
+            return '';
+        }
+
+        $separator = DIRECTORY_SEPARATOR;
+
+        $path = trim($path, $separator);
+
+        return "{$_scheme[$scheme]}{$separator}{$path}";
     }
 }
 
-if (!function_exists('app_dir_path')) {
-    function app_dir_path(string $path): string {
-        return app_config()->get('root_dir').DIRECTORY_SEPARATOR.trim($path, DIRECTORY_SEPARATOR);
+if (!function_exists('app_get_url')) {
+    function app_get_url(string $path, string $scheme = 'stylesheet'): string {
+        static $_scheme;
+
+        if (null === $_scheme) {
+            $upload = wp_upload_dir();
+
+            $_scheme['parent'] = get_template_directory_uri();
+            $_scheme['stylesheet'] = get_stylesheet_directory_uri();
+            $_scheme['upload'] = $upload['baseurl'];
+        }
+
+        if (empty($_scheme[$scheme])) {
+            return '';
+        }
+
+        $path = trim($path, '/');
+
+        return "{$_scheme[$scheme]}/{$path}";
     }
 }
 
 if (!function_exists('app_url_patch')) {
-    function app_url_path(string $path): string {
-        return app_config()->get('root_url').'/'.trim($path, '/');
+    function app_url_path(string $path, string $scheme = 'stylesheet'): string {
+        return app_get_url($path, $scheme);
+    }
+}
+
+if (!function_exists('app_upload_url')) {
+    function app_upload_url(string $path): string {
+        return app_get_url($path, 'upload');
     }
 }
 
 if (!function_exists('app_use_webp')) {
     function app_use_webp(): bool {
-        $acceptWebp = filter_input(INPUT_SERVER, 'HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
+        $acceptWebp = app_get_server_data('HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/image\\/webp/',
             ],
@@ -36,7 +72,7 @@ if (!function_exists('app_use_webp')) {
             return true;
         }
 
-        $isGoogle = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+        $isGoogle = app_get_server_data('HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/\s+(Chrome\/|Googlebot\/)/i',
             ],
@@ -46,23 +82,25 @@ if (!function_exists('app_use_webp')) {
             return true;
         }
 
-        $isSafari = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+        /** @var null|string $isSafari */
+        $isSafari = app_get_server_data('HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/Version.[\d\.]*\s+Safari.[\d\.]*/i',
             ],
         ]);
 
-        $isFirefox = filter_input(INPUT_SERVER, 'HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
+        /** @var null|string $isFirefox */
+        $isFirefox = app_get_server_data('HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/\s+Firefox.[\d\.]*/i',
             ],
         ]);
 
-        if ($isSafari && (preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
+        if (!empty($isSafari) && (preg_match('/Version.(?<v>[\d.]+)?/i', $isSafari, $res) && version_compare($res['v'], '13', '>='))) {
             return true;
         }
 
-        return $isFirefox && (preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='));
+        return !empty($isFirefox) && (preg_match('/Firefox\/(?<v>[\d.]+)?/i', $isFirefox, $res) && version_compare($res['v'], '65', '>='));
     }
 }
 
@@ -79,6 +117,25 @@ if (!function_exists('app_get_request_data')) {
         ) : (!empty($_REQUEST) ? $_REQUEST : []);
 
         return new ParameterBag((array) $data);
+    }
+}
+
+if (!function_exists('app_get_server_data')) {
+    /**
+     * @param array|int $options
+     *
+     * @return null|mixed
+     */
+    function app_get_server_data(string $name, int $filter = FILTER_UNSAFE_RAW, $options = FILTER_NULL_ON_FAILURE) {
+        if (filter_has_var(INPUT_SERVER, $name)) {
+            $data = filter_input(INPUT_SERVER, $name, $filter, $options);
+        } else {
+            $data = !empty($_SERVER[$name]) ?
+                filter_var($_SERVER[$name], $filter, $options) :
+                null;
+        }
+
+        return $data;
     }
 }
 
@@ -136,12 +193,15 @@ if (!function_exists('app_get_template')) {
 }
 
 if (!function_exists('app_base64_encode_data')) {
-    /**
-     * @return bool|string
-     */
     function app_base64_encode_data(string $str): string {
-        if (base64_encode(base64_decode($str, true)) === $str) {
-            $str = base64_decode($str, true);
+        $decode = base64_decode($str, true);
+
+        if (empty($decode)) {
+            return $str;
+        }
+
+        if (base64_encode($decode) === $str) {
+            return $decode;
         }
 
         return $str;
@@ -150,27 +210,35 @@ if (!function_exists('app_base64_encode_data')) {
 
 if (!function_exists('app_trim_string')) {
     function app_trim_string(string $string): string {
-        return trim(preg_replace('/\s{2,}/siu', ' ', $string));
+        $string = preg_replace('/\s{2,}/siu', ' ', $string);
+
+        return trim((string) $string);
     }
 }
 
 if (!function_exists('app_get_current_relative_url')) {
     function app_get_current_relative_url(): string {
-        $requestUri = filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_SANITIZE_STRING);
+        /** @var null|string $request */
+        $request = app_get_server_data('REQUEST_URI', FILTER_SANITIZE_STRING);
 
-        $currentRelative = untrailingslashit($requestUri);
-
-        if (is_customize_preview()) {
-            $currentRelative = strtok(untrailingslashit($requestUri), '?');
+        if (empty($request)) {
+            $request = '/';
         }
 
-        return $currentRelative;
+        $relative = untrailingslashit($request);
+
+        if (is_customize_preview()) {
+            $relative = (string) strtok(untrailingslashit($request), '?');
+        }
+
+        return $relative;
     }
 }
 
 if (!function_exists('app_get_current_url')) {
     function app_get_current_url(): string {
-        $host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_STRING);
+        /** @var string $host */
+        $host = app_get_server_data('HTTP_HOST', FILTER_SANITIZE_STRING);
 
         return set_url_scheme('https://'.$host.app_get_current_relative_url());
     }
@@ -217,14 +285,17 @@ if (!function_exists('app_generate_random_string')) {
      */
     function app_generate_random_string(string $input, int $strength = 16): string {
         $input_length = strlen($input);
-        $random_string = '';
+        $string = '';
 
         for ($i = 0; $i < $strength; ++$i) {
-            $random_character = $input[random_int(0, $input_length - 1)];
-            $random_string .= $random_character;
+            try {
+                $character = $input[random_int(0, $input_length - 1)];
+                $string .= $character;
+            } catch (Exception $e) {
+            }
         }
 
-        return strtoupper($random_string);
+        return strtoupper($string);
     }
 }
 
@@ -252,7 +323,7 @@ if (!function_exists('app_add_attr_to_el')) {
                 $attributes[] = sprintf(
                     '%s="%s"',
                     esc_attr($key),
-                    $is_url ? esc_url($value) : esc_attr($value)
+                    $is_url ? esc_url((string) $value) : esc_attr((string) $value)
                 );
             }
 
@@ -273,7 +344,7 @@ if (!function_exists('app_get_dom_content')) {
         $dom->encoding = 'UTF-8';
         libxml_use_internal_errors(true);
 
-        $content = str_replace(PHP_EOL, null, $content);
+        $content = str_replace(PHP_EOL, '', $content);
         $content = mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
 
         $dom->loadHTML(
@@ -286,15 +357,60 @@ if (!function_exists('app_get_dom_content')) {
 }
 
 if (!function_exists('app_manifest')) {
-    function app_manifest(string $manifestFile = 'dist/mix-manifest.json', string $distDir = 'dist'): Manifest {
-        /** @var Manifest $manifest */
+    /**
+     * @return null|array<string,string>
+     */
+    function app_manifest(): ?array {
         static $manifest;
 
-        if (empty($manifest)) {
-            $manifest = Manifest::getInstance($manifestFile, $distDir);
+        if (null === $manifest) {
+            $file = app_dir_path('dist/mix-manifest.json');
+
+            if (is_readable($file)) {
+                try {
+                    $content = file_get_contents($file);
+
+                    if (!empty($content)) {
+                        $manifest = app_json_decode($content, true);
+                    }
+                } catch (Exception $exception) {
+                    error_log($exception);
+                    $manifest = null;
+                }
+            }
         }
 
         return $manifest;
+    }
+}
+
+if (!function_exists('app_manifest_url')) {
+    function app_manifest_url(string $path): string {
+        $manifest = app_manifest();
+
+        if (!empty($manifest) && !empty($manifest[$path])) {
+            $path = '/'.ltrim($path, '/');
+
+            return app_url_path("dist{$manifest[$path]}");
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('app_manifest_path')) {
+    function app_manifest_path(string $path): string {
+        $manifest = app_manifest();
+
+        if (!empty($manifest) && !empty($manifest[$path])) {
+            $separator = DIRECTORY_SEPARATOR;
+
+            $path = $separator.ltrim($path, $separator);
+
+            return app_dir_path("dist{$manifest[$path]}");
+        }
+
+        return '';
     }
 }
 
@@ -329,7 +445,7 @@ if (!function_exists('app_string_slugify')) {
         $separator = '-';
 
         if (class_exists(Normalizer::class)) {
-            $string = Normalizer::normalize($string);
+            $string = (string) Normalizer::normalize($string);
         }
 
         $string = wp_strip_all_tags($string, true);
@@ -342,14 +458,14 @@ if (!function_exists('app_string_slugify')) {
                 '#[^A-Za-z1-9]#',
             ], $separator, $string);
 
-            $string = app_strtolower($string);
+            $string = app_strtolower((string) $string);
         }
 
-        $string = preg_replace('/[^A-Za-z0-9_-]/', $separator, $string);
+        $string = preg_replace('/[^A-Za-z0-9_-]/', $separator, (string) $string);
 
-        $string = preg_replace('/[-\s]+/', $separator, $string);
+        $string = preg_replace('/[-\s]+/', $separator, (string) $string);
 
-        return trim($string, $separator);
+        return trim((string) $string, $separator);
     }
 }
 
@@ -388,7 +504,7 @@ if (!function_exists('app_is_rest')) {
 
         $regexp = preg_quote("{$wpRestPrefix}", '/');
 
-        return (bool) filter_input(INPUT_SERVER, 'REQUEST_URI', FILTER_VALIDATE_REGEXP, [
+        return (bool) app_get_server_data('REQUEST_URI', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => "/^{$regexp}/",
             ],
