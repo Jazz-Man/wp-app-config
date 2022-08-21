@@ -13,12 +13,15 @@
         "preferred-install": "dist",
         "optimize-autoloader": true,
         "classmap-authoritative": true,
-        "apcu-autoloader": true
+        "apcu-autoloader": true,
+        "allow-plugins": {
+            "roots/wordpress-core-installer": true,
+            "phpstan/extension-installer": true
+        }
     },
     "require": {
         "php": ">=7.4",
-        "jazzman/parameter-bag": "^1.0",
-        "jazzman/singleton-trait": "^1.1"
+        "jazzman/parameter-bag": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -29,9 +32,13 @@
         ]
     },
     "require-dev": {
-        "jazzman/php-cs-fixer-rules": "^0.1.1",
+        "jazzman/php-cs-fixer-rules": "^0.1.2",
+        "php-stubs/wordpress-stubs": "^5.9",
+        "phpmd/phpmd": "@stable",
+        "phpstan/extension-installer": "^1.1",
         "roave/security-advisories": "dev-master",
-        "roots/wordpress": "^5.9"
+        "roots/wordpress": "^5.9",
+        "szepeviktor/phpstan-wordpress": "^1.1"
     },
     "extra": {
         "installer-paths": {
@@ -42,7 +49,19 @@
         "wordpress-install-dir": "vendor/wp"
     },
     "scripts": {
-        "php-cs-fixer": "php-cs-fixer fix -v --diff",
-        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/,vendor/'"
+        "rm-cache" : [
+            "phpstan clear-result-cache",
+            "psalm --clear-cache",
+            "psalm --clear-global-cache"
+        ],
+        "init-baseline-phpmd": "@phpmd --generate-baseline",
+        "init-baseline-psalm": "@psalm --set-baseline=psalm-baseline.xml",
+        "php-cs-fixer": "php-cs-fixer fix -vvv --diff",
+        "update-baseline-psalm": "@psalm --update-baseline=psalm-baseline.xml",
+        "update-baseline-phpmd": "@phpmd --update-baseline",
+        "baseline-phpstan": "@phpstan --generate-baseline=phpstan-baseline.neon",
+        "phpstan": "phpstan --no-progress",
+        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/*,vendor/*,stubs/*'",
+        "psalm": "psalm --config=psalm.xml --show-info=true --stats --no-progress"
     }
 }
