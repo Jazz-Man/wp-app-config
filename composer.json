@@ -38,7 +38,8 @@
         "phpstan/extension-installer": "^1.1",
         "roave/security-advisories": "dev-master",
         "roots/wordpress": "^5.9",
-        "szepeviktor/phpstan-wordpress": "^1.1"
+        "szepeviktor/phpstan-wordpress": "^1.1",
+        "vimeo/psalm": "^4.26"
     },
     "extra": {
         "installer-paths": {
