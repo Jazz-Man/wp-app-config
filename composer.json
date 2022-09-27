@@ -33,11 +33,11 @@
     },
     "require-dev": {
         "jazzman/php-cs-fixer-rules": "^0.1.2",
-        "php-stubs/wordpress-stubs": "^5.9",
+        "php-stubs/wordpress-stubs": "^6.0",
         "phpmd/phpmd": "@stable",
         "phpstan/extension-installer": "^1.1",
         "roave/security-advisories": "dev-master",
-        "roots/wordpress": "^5.9",
+        "roots/wordpress": "^6.0",
         "szepeviktor/phpstan-wordpress": "^1.1",
         "vimeo/psalm": "^4.27"
     },
@@ -55,6 +55,16 @@
             "psalm --clear-cache",
             "psalm --clear-global-cache"
         ],
+        "update-baseline": [
+            "@update-baseline-phpmd",
+            "@baseline-phpstan",
+            "@update-baseline-psalm"
+        ],
+        "init-baseline": [
+            "@init-baseline-phpmd",
+            "@init-baseline-psalm",
+            "@baseline-phpstan"
+        ],
         "init-baseline-phpmd": "@phpmd --generate-baseline",
         "init-baseline-psalm": "@psalm --set-baseline=psalm-baseline.xml",
         "php-cs-fixer": "php-cs-fixer fix -vvv --diff",
@@ -62,7 +72,7 @@
         "update-baseline-phpmd": "@phpmd --update-baseline",
         "baseline-phpstan": "@phpstan --generate-baseline=phpstan-baseline.neon",
         "phpstan": "phpstan --no-progress",
-        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/*,vendor/*,stubs/*'",
+        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/*,vendor/*'",
         "psalm": "psalm --config=psalm.xml --show-info=true --stats --no-progress"
     }
 }
