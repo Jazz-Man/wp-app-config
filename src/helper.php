@@ -1,7 +1,5 @@
 <?php
 
-use JazzMan\ParameterBag\ParameterBag;
-
 if (!function_exists('app_dir_path')) {
     function app_dir_path(string $path, string $scheme = 'stylesheet'): string {
         static $_scheme;
@@ -62,6 +60,7 @@ if (!function_exists('app_upload_url')) {
 
 if (!function_exists('app_use_webp')) {
     function app_use_webp(): bool {
+        /** @var null|string $acceptWebp */
         $acceptWebp = app_get_server_data('HTTP_ACCEPT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/image\\/webp/',
@@ -72,6 +71,7 @@ if (!function_exists('app_use_webp')) {
             return true;
         }
 
+        /** @var null|string $isGoogle */
         $isGoogle = app_get_server_data('HTTP_USER_AGENT', FILTER_VALIDATE_REGEXP, [
             'options' => [
                 'regexp' => '/\s+(Chrome\/|Googlebot\/)/i',
@@ -104,46 +104,14 @@ if (!function_exists('app_use_webp')) {
     }
 }
 
-if (!function_exists('app_get_request_data')) {
-    function app_get_request_data(): ParameterBag {
-        $method = filter_input(INPUT_SERVER, 'REQUEST_METHOD', FILTER_VALIDATE_REGEXP, [
-            'options' => [
-                'regexp' => '/get|post/i',
-            ],
-        ]);
-
-        $data = $method ? filter_input_array(
-            'POST' === $method ? INPUT_POST : INPUT_GET
-        ) : (!empty($_REQUEST) ? $_REQUEST : []);
-
-        return new ParameterBag((array) $data);
-    }
-}
-
-if (!function_exists('app_get_server_data')) {
-    /**
-     * @param array|int $options
-     *
-     * @return null|mixed
-     */
-    function app_get_server_data(string $name, int $filter = FILTER_UNSAFE_RAW, $options = FILTER_NULL_ON_FAILURE) {
-        if (filter_has_var(INPUT_SERVER, $name)) {
-            $data = filter_input(INPUT_SERVER, $name, $filter, $options);
-        } else {
-            $data = !empty($_SERVER[$name]) ?
-                filter_var($_SERVER[$name], $filter, $options) :
-                null;
-        }
-
-        return $data;
-    }
-}
-
 if (!function_exists('app_json_decode')) {
     /**
+     * @psalm-param int<1,max> $depth
+     *
      * @return mixed
      */
     function app_json_decode(string $json, bool $associative = false, int $depth = 512, int $flags = 0) {
+        /** @var mixed $data */
         $data = json_decode($json, $associative, $depth, $flags);
 
         if (JSON_ERROR_NONE !== json_last_error()) {
@@ -170,6 +138,8 @@ if (!function_exists('app_files_in_path')) {
 
 if (!function_exists('app_get_template')) {
     /**
+     * @param array<string,mixed> $attributes
+     *
      * @return false|string
      */
     function app_get_template(string $template, array $attributes = []) {
@@ -270,7 +240,7 @@ if (!function_exists('app_error_log')) {
         $error = new WP_Error();
 
         if (defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
-            error_log($exception);
+            error_log((string) $exception);
         }
 
         $error->add($errorCode, $exception->getMessage());
@@ -284,8 +254,13 @@ if (!function_exists('app_generate_random_string')) {
      * @throws \Exception
      */
     function app_generate_random_string(string $input, int $strength = 16): string {
-        $input_length = strlen($input);
         $string = '';
+
+        if (empty($input)) {
+            return $string;
+        }
+
+        $input_length = strlen($input);
 
         for ($i = 0; $i < $strength; ++$i) {
             try {
@@ -358,12 +333,13 @@ if (!function_exists('app_get_dom_content')) {
 
 if (!function_exists('app_manifest')) {
     /**
-     * @return null|array<string,string>
+     * @return array<string,string>
      */
-    function app_manifest(): ?array {
-        static $manifest;
+    function app_manifest(): array {
+        /** @var array<string,string> $manifest */
+        static $manifest = [];
 
-        if (null === $manifest) {
+        if (empty($manifest)) {
             $file = app_dir_path('dist/mix-manifest.json');
 
             if (is_readable($file)) {
@@ -371,11 +347,12 @@ if (!function_exists('app_manifest')) {
                     $content = file_get_contents($file);
 
                     if (!empty($content)) {
+                        /** @var array<string,string> $manifest */
                         $manifest = app_json_decode($content, true);
                     }
                 } catch (Exception $exception) {
-                    error_log($exception);
-                    $manifest = null;
+                    trigger_error((string) $exception);
+                    $manifest = [];
                 }
             }
         }
@@ -445,7 +422,7 @@ if (!function_exists('app_string_slugify')) {
         $separator = '-';
 
         if (class_exists(Normalizer::class)) {
-            $string = (string) Normalizer::normalize($string);
+            $string = Normalizer::normalize($string);
         }
 
         $string = wp_strip_all_tags($string, true);
@@ -474,6 +451,7 @@ if (!function_exists('app_locate_root_dir')) {
      * @return false|string
      */
     function app_locate_root_dir() {
+        /** @var null|false|string $path */
         static $path;
 
         if (null === $path) {
