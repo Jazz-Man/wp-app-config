@@ -422,7 +422,11 @@ if (!function_exists('app_string_slugify')) {
         $separator = '-';
 
         if (class_exists(Normalizer::class)) {
-            $string = Normalizer::normalize($string);
+            $normalized = Normalizer::normalize($string);
+
+            if (!empty($normalized)) {
+                $string = $normalized;
+            }
         }
 
         $string = wp_strip_all_tags($string, true);
