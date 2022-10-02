@@ -13,17 +13,10 @@
         <directory name="src"/>
         <ignoreFiles>
             <directory name="vendor"/>
+            <directory name="cache"/>
             <file name=".php-cs-fixer.php"/>
         </ignoreFiles>
     </projectFiles>
-
-    <issueHandlers>
-        <TooManyArguments>
-            <errorLevel type="suppress">
-                <referencedFunction name="apply_filters"/>
-            </errorLevel>
-        </TooManyArguments>
-    </issueHandlers>
 
     <stubs>
         <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"/>

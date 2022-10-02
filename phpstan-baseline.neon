@@ -1,21 +1,2 @@
 parameters:
-	ignoreErrors:
-		-
-			message: "#^Function app_get_server_data\\(\\) has parameter \\$options with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/helper.php
-
-		-
-			message: "#^Function app_get_template\\(\\) has parameter \\$attributes with no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/helper.php
-
-		-
-			message: "#^Parameter \\#1 \\$min \\(0\\) of function random_int expects lower number than parameter \\#2 \\$max \\(int\\<\\-1, max\\>\\)\\.$#"
-			count: 1
-			path: src/helper.php
-
-		-
-			message: "#^Parameter \\#3 \\$depth of function json_decode expects int\\<1, max\\>, int given\\.$#"
-			count: 1
-			path: src/helper.php
+	ignoreErrors: []

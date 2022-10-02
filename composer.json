@@ -36,7 +36,7 @@
         "php-stubs/wordpress-stubs": "^6.0",
         "phpmd/phpmd": "@stable",
         "phpstan/extension-installer": "^1.1",
-        "roave/security-advisories": "dev-master",
+        "roave/security-advisories": "@dev",
         "roots/wordpress": "^6.0",
         "szepeviktor/phpstan-wordpress": "^1.1",
         "vimeo/psalm": "^4.27"
@@ -70,7 +70,7 @@
         "php-cs-fixer": "php-cs-fixer fix -vvv --diff",
         "update-baseline-psalm": "@psalm --update-baseline=psalm-baseline.xml",
         "update-baseline-phpmd": "@phpmd --update-baseline",
-        "baseline-phpstan": "@phpstan --generate-baseline=phpstan-baseline.neon",
+        "baseline-phpstan": "@phpstan --generate-baseline=phpstan-baseline.neon --allow-empty-baseline",
         "phpstan": "phpstan --no-progress",
         "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/*,vendor/*'",
         "psalm": "psalm --config=psalm.xml --show-info=true --stats --no-progress"
