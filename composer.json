@@ -39,7 +39,7 @@
         "roave/security-advisories": "@dev",
         "roots/wordpress": "^6.0",
         "szepeviktor/phpstan-wordpress": "^1.1",
-        "vimeo/psalm": "^4.27"
+        "vimeo/psalm": "^5.8"
     },
     "extra": {
         "installer-paths": {
