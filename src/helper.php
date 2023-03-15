@@ -319,8 +319,11 @@ if (!function_exists('app_get_dom_content')) {
         $dom->encoding = 'UTF-8';
         libxml_use_internal_errors(true);
 
-        $content = str_replace(PHP_EOL, '', $content);
-        $content = mb_convert_encoding($content, 'HTML-ENTITIES', 'UTF-8');
+        $content = (string) str_replace(PHP_EOL, '', $content);
+
+        if (function_exists('mb_encode_numericentity')) {
+            $content = mb_encode_numericentity($content, [0x80, 0x10FFFF, 0, ~0], 'UTF-8');
+        }
 
         $dom->loadHTML(
             $content,
