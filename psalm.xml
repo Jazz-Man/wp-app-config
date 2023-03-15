@@ -5,8 +5,7 @@
        cacheDirectory="cache/psalm"
        serializer="igbinary"
        errorBaseline="psalm-baseline.xml"
-       errorLevel="1"
-       phpVersion="7.4"
+       phpVersion="8.2"
        autoloader="vendor/szepeviktor/phpstan-wordpress/bootstrap.php"
 >
     <projectFiles>
