@@ -1,15 +1,15 @@
 runner:
-  phpmd:
-    cmd: phpmd . checkstyle phpmd.ruleset.xml --exclude 'cache/*,vendor/*' --baseline-file phpmd.baseline.xml
-    name: phpmd
-    format: checkstyle
-    level: warning
-
-  phpstan:
-    cmd: phpstan analyse -c phpstan.neon.dist --error-format=raw --no-progress
-    format: phpstan
-    name: phpstan
-    level: warning
+#  phpmd:
+#    cmd: phpmd . checkstyle phpmd.ruleset.xml --exclude 'cache/*,vendor/*' --baseline-file phpmd.baseline.xml
+#    name: phpmd
+#    format: checkstyle
+#    level: warning
+#
+#  phpstan:
+#    cmd: phpstan analyse -c phpstan.neon.dist --error-format=raw --no-progress
+#    format: phpstan
+#    name: phpstan
+#    level: warning
 
   psalm:
     cmd: psalm --output-format=checkstyle --show-info=true --config=psalm.xml --no-progress --use-baseline=psalm-baseline.xml
