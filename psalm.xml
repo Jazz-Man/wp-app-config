@@ -6,6 +6,8 @@
        serializer="igbinary"
        errorBaseline="psalm-baseline.xml"
        phpVersion="8.2"
+       findUnusedBaselineEntry="true"
+       findUnusedCode="false"
        autoloader="vendor/szepeviktor/phpstan-wordpress/bootstrap.php"
 >
     <projectFiles>

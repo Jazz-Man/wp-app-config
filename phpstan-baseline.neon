@@ -1,6 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Function app_files_in_path\\(\\) return type with generic class RegexIterator does not specify its types\\: TKey, TValue, TIterator$#"
+			message: "#^Function app_files_in_path\\(\\) should return RegexIterator\\<RecursiveDirectoryIterator, mixed, RecursiveIteratorIterator\\<RecursiveDirectoryIterator\\>\\> but returns RegexIterator\\<mixed, mixed, Traversable\\<TKey, TValue\\>\\>\\.$#"
 			count: 1
 			path: src/helper.php

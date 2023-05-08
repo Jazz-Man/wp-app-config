@@ -123,6 +123,9 @@ if (!function_exists('app_json_decode')) {
 }
 
 if (!function_exists('app_files_in_path')) {
+    /**
+     * @psalm-return RegexIterator<RecursiveDirectoryIterator, mixed, RecursiveIteratorIterator<RecursiveDirectoryIterator>>
+     */
     function app_files_in_path(string $folder, string $pattern, int $maxDepth = 1): RegexIterator {
         if (!is_readable($folder)) {
             throw new InvalidArgumentException('folder is not exist');

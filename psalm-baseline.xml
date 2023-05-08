@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<files psalm-version="5.8.0@9cf4f60a333f779ad3bc704a555920e81d4fdcda">
+<files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
   <file src="src/helper.php">
-    <ArgumentTypeCoercion>
-      <code>$content</code>
-    </ArgumentTypeCoercion>
+    <ArgumentTypeCoercion/>
+    <InvalidArgument>
+      <code>$depth</code>
+    </InvalidArgument>
+    <InvalidTemplateParam>
+      <code><![CDATA[RegexIterator<RecursiveDirectoryIterator, mixed, RecursiveIteratorIterator<RecursiveDirectoryIterator>>]]></code>
+    </InvalidTemplateParam>
     <RedundantCondition>
       <code>WP_DEBUG_LOG</code>
     </RedundantCondition>
