@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files psalm-version="5.11.0@c9b192ab8400fdaf04b2b13d110575adc879aa90">
   <file src="src/helper.php">
-    <ArgumentTypeCoercion/>
+    <ArgumentTypeCoercion>
+      <code>$content</code>
+    </ArgumentTypeCoercion>
     <InvalidArgument>
       <code>$depth</code>
     </InvalidArgument>
     <InvalidTemplateParam>
       <code><![CDATA[RegexIterator<RecursiveDirectoryIterator, mixed, RecursiveIteratorIterator<RecursiveDirectoryIterator>>]]></code>
     </InvalidTemplateParam>
+    <RedundantCast>
+      <code><![CDATA[(string) str_replace(PHP_EOL, '', $content)]]></code>
+    </RedundantCast>
     <RedundantCondition>
       <code>WP_DEBUG_LOG</code>
     </RedundantCondition>
