@@ -3,7 +3,6 @@
        xmlns="https://getpsalm.org/schema/config"
        xsi:schemaLocation="https://getpsalm.org/schema/config"
        cacheDirectory="cache/psalm"
-       serializer="igbinary"
        errorBaseline="psalm-baseline.xml"
        phpVersion="8.2"
        findUnusedBaselineEntry="true"
