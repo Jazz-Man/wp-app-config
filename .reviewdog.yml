@@ -6,13 +6,13 @@ runner:
     level: warning
 
   phpstan:
-    cmd: phpstan analyse -c phpstan.neon.dist --error-format=checkstyle --no-progress
-    format: checkstyle
+    cmd: phpstan analyse -c phpstan.neon.dist --error-format=raw --no-progress
+    format: phpstan
     name: phpstan
     level: warning
 
   psalm:
-    cmd: psalm --output-format=checkstyle --show-info=true --config=psalm.xml --no-progress --use-baseline=psalm-baseline.xml
-    format: checkstyle
+    cmd: psalm --output-format=text --config=psalm.xml --no-progress --use-baseline=psalm-baseline.xml
+    format: psalm
     name: psalm
     level: warning
