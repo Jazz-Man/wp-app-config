@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<psalm xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns="https://getpsalm.org/schema/config"
-       xsi:schemaLocation="https://getpsalm.org/schema/config"
-       cacheDirectory="cache/psalm"
-       errorBaseline="psalm-baseline.xml"
-       phpVersion="8.2"
-       findUnusedBaselineEntry="true"
-       findUnusedCode="false"
-       autoloader="vendor/szepeviktor/phpstan-wordpress/bootstrap.php"
->
+<psalm
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="https://getpsalm.org/schema/config"
+        xsi:schemaLocation="https://getpsalm.org/schema/config"
+        errorBaseline="psalm-baseline.xml"
+        phpVersion="8.2"
+        findUnusedBaselineEntry="true"
+        findUnusedCode="false"
+        errorLevel="1"
+        autoloader="vendor/szepeviktor/phpstan-wordpress/bootstrap.php">
     <projectFiles>
         <directory name="src"/>
         <ignoreFiles>
@@ -17,11 +17,12 @@
             <file name=".php-cs-fixer.php"/>
         </ignoreFiles>
     </projectFiles>
-
     <stubs>
         <file name="vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"/>
     </stubs>
     <globals>
-        <var name="ABSPATH" type="string"/>
+        <var
+                name="ABSPATH"
+                type="string"/>
     </globals>
 </psalm>
