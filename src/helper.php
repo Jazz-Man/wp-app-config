@@ -20,7 +20,7 @@ if ( ! function_exists( 'app_dir_path' ) ) {
 
         $path = trim( $path, $separator );
 
-        return "{$_scheme[$scheme]}{$separator}{$path}";
+        return $_scheme[$scheme].$separator.$path;
     }
 }
 
@@ -42,7 +42,7 @@ if ( ! function_exists( 'app_get_url' ) ) {
 
         $path = trim( $path, '/' );
 
-        return "{$_scheme[$scheme]}/{$path}";
+        return sprintf( '%s/%s', $_scheme[$scheme], $path );
     }
 }
 
@@ -149,8 +149,8 @@ if ( ! function_exists( 'app_get_template' ) ) {
         $templateFile = locate_template( $template );
 
         if ( ! empty( $templateFile ) ) {
-            if ( ! empty( $attributes ) ) {
-                extract( $attributes, EXTR_OVERWRITE );
+            if ( [] !== $attributes ) {
+                extract( $attributes );
             }
 
             ob_start();
@@ -167,7 +167,7 @@ if ( ! function_exists( 'app_base64_encode_data' ) ) {
     function app_base64_encode_data( string $str ): string {
         $decode = base64_decode( $str, true );
 
-        if ( empty( $decode ) ) {
+        if ( '' === $decode || '0' === $decode || false === $decode ) {
             return $str;
         }
 
@@ -196,13 +196,11 @@ if ( ! function_exists( 'app_get_current_relative_url' ) ) {
             $request = '/';
         }
 
-        $relative = untrailingslashit( $request );
-
         if ( is_customize_preview() ) {
-            $relative = (string) strtok( untrailingslashit( $request ), '?' );
+            return (string) strtok( untrailingslashit( $request ), '?' );
         }
 
-        return $relative;
+        return untrailingslashit( $request );
     }
 }
 
@@ -220,7 +218,7 @@ if ( ! function_exists( 'app_is_current_host' ) ) {
         static $currentHost;
 
         if ( null === $currentHost ) {
-            $currentHost = parse_url( home_url(), PHP_URL_HOST );
+            $currentHost = parse_url( (string) home_url(), PHP_URL_HOST );
         }
 
         if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
@@ -255,7 +253,7 @@ if ( ! function_exists( 'app_generate_random_string' ) ) {
     function app_generate_random_string( string $input, int $strength = 16 ): string {
         $string = '';
 
-        if ( empty( $input ) ) {
+        if ( '' === $input || '0' === $input ) {
             return $string;
         }
 
@@ -265,7 +263,7 @@ if ( ! function_exists( 'app_generate_random_string' ) ) {
             try {
                 $character = $input[random_int( 0, $input_length - 1 )];
                 $string .= $character;
-            } catch ( Exception $e ) {
+            } catch ( Exception ) {
             }
         }
 
@@ -348,7 +346,7 @@ if ( ! function_exists( 'app_manifest' ) ) {
                 try {
                     $content = file_get_contents( $file );
 
-                    if ( ! empty( $content ) ) {
+                    if ( ! ( '' === $content || '0' === $content || false === $content ) ) {
                         /** @var array<string,string> $manifest */
                         $manifest = app_json_decode( $content, true );
                     }
@@ -367,10 +365,10 @@ if ( ! function_exists( 'app_manifest_url' ) ) {
     function app_manifest_url( string $path ): string {
         $manifest = app_manifest();
 
-        if ( ! empty( $manifest ) && ! empty( $manifest[$path] ) ) {
+        if ( [] !== $manifest && ( isset( $manifest[$path] ) && ( '' !== $manifest[$path] && '0' !== $manifest[$path] ) ) ) {
             $path = '/'.ltrim( $path, '/' );
 
-            return app_url_path( "dist{$manifest[$path]}" );
+            return app_url_path( 'dist'.$manifest[$path] );
         }
 
         return '';
@@ -381,12 +379,12 @@ if ( ! function_exists( 'app_manifest_path' ) ) {
     function app_manifest_path( string $path ): string {
         $manifest = app_manifest();
 
-        if ( ! empty( $manifest ) && ! empty( $manifest[$path] ) ) {
+        if ( [] !== $manifest && ( isset( $manifest[$path] ) && ( '' !== $manifest[$path] && '0' !== $manifest[$path] ) ) ) {
             $separator = DIRECTORY_SEPARATOR;
 
             $path = $separator.ltrim( $path, $separator );
 
-            return app_dir_path( "dist{$manifest[$path]}" );
+            return app_dir_path( 'dist'.$manifest[$path] );
         }
 
         return '';
@@ -486,11 +484,11 @@ if ( ! function_exists( 'app_is_rest' ) ) {
             $wpRestPrefix .= ltrim( $prefix, '/' );
         }
 
-        $regexp = preg_quote( "{$wpRestPrefix}", '/' );
+        $regexp = preg_quote( $wpRestPrefix, '/' );
 
         return (bool) app_get_server_data( 'REQUEST_URI', FILTER_VALIDATE_REGEXP, [
             'options' => [
-                'regexp' => "/^{$regexp}/",
+                'regexp' => sprintf( '/^%s/', $regexp ),
             ],
         ] );
     }
