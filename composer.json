@@ -74,7 +74,7 @@
         "update-baseline-phpmd": "@phpmd --update-baseline",
         "baseline-phpstan": "@phpstan --generate-baseline=phpstan-baseline.neon --allow-empty-baseline",
         "phpstan": "phpstan --no-progress",
-        "phpmd": "phpmd . text phpmd.ruleset.xml --exclude 'cache/*,vendor/*'",
+        "phpmd": "phpmd . text phpmd.ruleset.xml",
         "psalm": "psalm --config=psalm.xml --show-info=true --stats --no-progress",
         "php-cs-fixer": "php-cs-fixer fix -vvv --diff"
     }

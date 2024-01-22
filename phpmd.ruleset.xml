@@ -9,6 +9,13 @@
     Enable all rulesets, except Controversial ("camelCase" rules).
   </description>
 
+  <include-pattern>*/src/*</include-pattern>
+
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/*cache*</exclude-pattern>
+  <exclude-pattern>*/rector.php</exclude-pattern>
+  <exclude-pattern>*/.php-cs-fixer*</exclude-pattern>
+
   <rule ref="rulesets/design.xml">
     <exclude name="ExitExpression"/>
   </rule>
