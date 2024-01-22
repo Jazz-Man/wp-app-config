@@ -2,6 +2,8 @@
 
 if ( ! function_exists( 'app_dir_path' ) ) {
     function app_dir_path( string $path, string $scheme = 'stylesheet' ): string {
+
+        /** @var array<string,string>|null $_scheme */
         static $_scheme;
 
         if ( null === $_scheme ) {
@@ -26,6 +28,8 @@ if ( ! function_exists( 'app_dir_path' ) ) {
 
 if ( ! function_exists( 'app_get_url' ) ) {
     function app_get_url( string $path, string $scheme = 'stylesheet' ): string {
+
+        /** @var array<string,string>|null $_scheme */
         static $_scheme;
 
         if ( null === $_scheme ) {
@@ -218,7 +222,7 @@ if ( ! function_exists( 'app_is_current_host' ) ) {
         static $currentHost;
 
         if ( null === $currentHost ) {
-            $currentHost = parse_url( (string) home_url(), PHP_URL_HOST );
+            $currentHost = parse_url( home_url(), PHP_URL_HOST );
         }
 
         if ( ! filter_var( $url, FILTER_VALIDATE_URL ) ) {
@@ -310,6 +314,7 @@ if ( ! function_exists( 'app_add_attr_to_el' ) ) {
 
 if ( ! function_exists( 'app_get_dom_content' ) ) {
     function app_get_dom_content( string $content ): DOMDocument {
+
         $dom = new DOMDocument( '1.0', 'UTF-8' );
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
@@ -478,6 +483,10 @@ if ( ! function_exists( 'app_locate_root_dir' ) ) {
 
 if ( ! function_exists( 'app_is_rest' ) ) {
     function app_is_rest( ?string $prefix = null ): bool {
+
+        if ( empty( $prefix ) ) {
+            return defined( 'REST_REQUEST' ) && REST_REQUEST;
+        }
 
         $wpRestPrefix = '/'.trailingslashit( rest_get_url_prefix() );
 
