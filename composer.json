@@ -41,6 +41,9 @@
         "roots/wordpress": "^6.4",
         "szepeviktor/phpstan-wordpress": "^1.3"
     },
+    "replace": {
+        "symfony/polyfill-php73": "*"
+    },
     "extra": {
         "installer-paths": {
             "vendor/wp/wp-content/mu-plugins/{$name}/": ["type:wordpress-muplugin"],
