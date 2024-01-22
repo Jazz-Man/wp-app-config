@@ -190,7 +190,7 @@ if ( ! function_exists( 'app_trim_string' ) ) {
 if ( ! function_exists( 'app_get_current_relative_url' ) ) {
     function app_get_current_relative_url(): string {
         /** @var string|null $request */
-        $request = app_get_server_data( 'REQUEST_URI', FILTER_SANITIZE_STRING );
+        $request = app_get_server_data( 'REQUEST_URI', FILTER_SANITIZE_URL );
 
         if ( empty( $request ) ) {
             $request = '/';
@@ -207,7 +207,7 @@ if ( ! function_exists( 'app_get_current_relative_url' ) ) {
 if ( ! function_exists( 'app_get_current_url' ) ) {
     function app_get_current_url(): string {
         /** @var string $host */
-        $host = app_get_server_data( 'HTTP_HOST', FILTER_SANITIZE_STRING );
+        $host = app_get_server_data( 'HTTP_HOST', FILTER_SANITIZE_URL );
 
         return set_url_scheme( 'https://'.$host.app_get_current_relative_url() );
     }
@@ -478,6 +478,7 @@ if ( ! function_exists( 'app_locate_root_dir' ) ) {
 
 if ( ! function_exists( 'app_is_rest' ) ) {
     function app_is_rest( ?string $prefix = null ): bool {
+
         $wpRestPrefix = '/'.trailingslashit( rest_get_url_prefix() );
 
         if ( null !== $prefix ) {
