@@ -20,7 +20,7 @@
         }
     },
     "require": {
-        "php": "^7.4|^8",
+        "php": "^8.2",
         "jazzman/parameter-bag": "^1.3"
     },
     "autoload": {
